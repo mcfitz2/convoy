@@ -1,0 +1,114 @@
+<div class="clr-row">
+    <div class="clr-col-8 clr-col-lg-8">
+        <span *ngIf="loading" class="spinner spinner-lg">Loading...</span>
+        <div *ngIf="!loading">
+            <div>
+                <div class="btn-group">
+                    <button (click)="openCreate()" class="btn">Add Task</button>
+                </div>
+                <div style="float: right" class="btn-group">
+                    <div class="radio btn">
+                        <input type="radio" name="btn-group-demo-radios" id="btn-demo-radio-1" checked
+                            (click)="viewDueTasks()" />
+                        <label for="btn-demo-radio-1">Due</label>
+                    </div>
+                    <div class="radio btn">
+                        <input type="radio" name="btn-group-demo-radios" id="btn-demo-radio-2"
+                            (click)="viewUpcomingTasks()" />
+                        <label for="btn-demo-radio-2">Upcoming</label>
+                    </div>
+                    <div class="radio btn">
+                        <input type="radio" name="btn-group-demo-radios" id="btn-demo-radio-3"
+                            (click)="viewAllTasks()" />
+                        <label for="btn-demo-radio-3">All</label>
+                    </div>
+                </div>
+
+            </div>
+            <div *ngIf="tasks.length > 0">
+                <div *ngFor="let thing of tasks">
+                    <app-task (refresh)="fetchData()" [task]="thing.task" [machine]="thing.machine"></app-task>
+                </div>
+            </div>
+            <div>
+                <div *ngIf="tasks.length == 0 && !createTask">
+                    <h2>You have no tasks!</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<clr-side-panel [(clrSidePanelOpen)]="showCreate" [clrSidePanelStaticBackdrop]="true">
+    <h3 class="side-panel-title">New Task</h3>
+    <div class="side-panel-body">
+        <form clrForm>
+            <clr-select-container>
+                <label>Machine</label>
+                <select clrSelect name="options" [(ngModel)]="selectedMachineId">
+                    <option *ngFor="let machine of machines" value="{{machine.id}}">{{machine.name}}</option>
+                </select>
+            </clr-select-container>
+            <clr-input-container>
+                <label>Description</label>
+                <input clrInput type="text" [(ngModel)]="taskDefinition.description" required name="description" />
+            </clr-input-container>
+            <clr-input-container>
+                <label>Meter Interval</label>
+                <input clrInput step="1000" min="1" type="number" [(ngModel)]="taskDefinition.meter_interval" required
+                    name="meter_interval" />
+                <clr-control-helper>{{machinesById.get(selectedMachineId)?.meter_unit |
+                    unitPlural}}</clr-control-helper>
+            </clr-input-container>
+            <clr-input-container>
+                <label>Time Interval</label>
+                <input clrInput type="number" min="1" [(ngModel)]="taskDefinition.time_interval" required
+                    name="time_interval" />
+                <clr-control-helper>days</clr-control-helper>
+            </clr-input-container>
+            <clr-checkbox-container>
+                <label>Recurring</label>
+                <clr-checkbox-wrapper>
+                    <input type="checkbox" clrCheckbox [(ngModel)]="taskDefinition.recurring" name="recurring" />
+                </clr-checkbox-wrapper>
+            </clr-checkbox-container>
+            <clr-textarea-container>
+                <label>Notes</label>
+                <textarea clrTextarea type="text" [(ngModel)]="taskDefinition.notes" name="notes"></textarea>
+            </clr-textarea-container>
+            <div>
+                <clr-combobox-container>
+                    <label>Supplies</label>
+                    <clr-combobox [(ngModel)]="selectedSupplies" name="supplies" clrMulti="true" required>
+                        <ng-container *clrOptionSelected="let selectedSupply">
+                            {{ selectedSupply?.name }}
+                          </ng-container>
+                      <clr-options>
+                        <clr-option *clrOptionItems="let supply of supplies; field: 'name'" [clrValue]="supply">
+                          {{ supply.name }}
+                        </clr-option>
+                      </clr-options>
+                    </clr-combobox>
+                  </clr-combobox-container>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let supply of selectedSupplies">
+                            <td>{{supply.name}}</td>
+                                <td><input class="clr-input" type="number" [(ngModel)]="supply.quantity" name="quant" required/>{{supply.unit}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+    <div class="side-panel-footer">
+        <button class="btn btn-outline" (click)="createTask()">Add Task</button>
+        <button class="btn btn-outline" (click)="closeCreate()">Cancel</button>
+    </div>
+</clr-side-panel>

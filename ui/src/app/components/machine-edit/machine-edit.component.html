@@ -1,0 +1,54 @@
+<clr-side-panel [(clrSidePanelOpen)]="open"   (clrSidePanelAlternateClose)="close.emit()"   [clrSidePanelPreventClose]="true">
+        <h3 class="side-panel-title">{{machine?.name || 'Add Machine'}}</h3>
+        <div class="side-panel-body">
+            <form [formGroup]="machineForm" clrForm>
+
+            <clr-input-container>
+                <label>Year</label>
+                <input clrInput type="number" min="1920" [max]="maxYear" formControlName="year"
+                     required name="year" />
+            </clr-input-container>
+            <clr-input-container>
+                <label>Make</label>
+                <input clrInput type="text"  formControlName="make" required name="make" />
+            </clr-input-container>
+            <clr-input-container>
+                <label>Model</label>
+                <input clrInput type="text"  formControlName="model" required name="model" />
+            </clr-input-container>
+            <clr-select-container>
+                <label>Meter Unit</label>
+                <select clrSelect required name="options" formControlName="meter_unit">
+                    <option value="mile">Miles</option>
+                    <option value="hour">Hours</option>
+                    <option value="kilometer">Kilometers</option>
+
+                </select>
+            </clr-select-container>
+            <!-- <clr-date-container>
+                <label>Purchase Date</label>
+                <input type="date" autocomplete="off" clrDate required formControlName="purchase_date"
+                    name="purchase_date" [(clrDate)]="purchaseDate" />
+            </clr-date-container> -->
+            <clr-file-input-container>
+                <label>Picture</label>
+                <input type="file" formControlName="file"  clrFileInput
+                    (change)="onImagePicked($event)" />
+                <clr-control-success>Upload successful</clr-control-success>
+                <clr-control-error>Upload failed</clr-control-error>
+            </clr-file-input-container>
+            <clr-input-container>
+                <label>Meter Reading</label>
+                <input clrInput type="number" formControlName="meter_value"
+                    required name="current_meter_reading" />
+                <clr-control-helper>{{machine.meter_unit | unitPlural}}</clr-control-helper>
+            </clr-input-container>
+        </form>
+
+        </div>
+        <div class="side-panel-footer">
+            <button *ngIf="!create" type="button" class="btn btn-outline btn-danger" (click)="deleteMachine()">Delete</button>
+            <button type="button" class="btn btn-outline" (click)="close.emit()">Cancel</button>
+            <button type="button" class="btn btn-primary" [disabled]="!machineForm.valid" (click)="submit()">Submit</button>
+        </div>
+</clr-side-panel>

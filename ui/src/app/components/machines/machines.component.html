@@ -1,0 +1,14 @@
+<div class="clr-row">
+    <div class="clr-col-8 clr-col-lg-8">
+    <span *ngIf="loading" class="spinner spinner-lg">Loading...</span>
+    <div *ngIf="!loading">
+        <clr-button-group class="btn-primary">
+            <clr-button (click)="createMode = true">Add Machine</clr-button>
+        </clr-button-group>
+    <div *ngFor="let machine of machines">
+        <app-machine (refresh)="fetchData()" [machine]="machine"></app-machine>
+    </div>
+    </div>
+    </div>
+</div>
+<app-machine-edit [open]="createMode" (close)="modalClosed()" [create]="true"></app-machine-edit>

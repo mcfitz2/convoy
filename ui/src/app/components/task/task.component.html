@@ -1,0 +1,60 @@
+<div class="card">
+    <div class="card-header">
+        {{task?.task_definition?.description}}
+        <clr-button-group class="btn-primary btn-sm task-button-group">
+            <clr-button (click)="openComplete()">View Details</clr-button>
+            <clr-button (click)="sendToTodoist()">Send to Todoist</clr-button>
+            <clr-button (click)="deleteTask()">Delete</clr-button>
+        </clr-button-group>
+    </div>
+    <div class="card-block">
+        <span class="label label-info">{{machine.name}}</span>
+        <app-task-status-badge [machine]="machine" [task]="task"></app-task-status-badge>
+        <app-task-supply-status-badge [task]="task"></app-task-supply-status-badge>
+
+    </div>
+</div>
+<clr-side-panel [(clrSidePanelOpen)]="showComplete" [clrSidePanelStaticBackdrop]="true">
+    <h3 class="side-panel-title">{{task?.task_definition?.description}}</h3>
+    <div class="side-panel-body">
+        <h2>Supplies</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <span *ngIf="task.task_definition.supplies.length == 0">No supplies needed</span>
+                <tr *ngFor="let supply of task.task_definition.supplies">
+                    <td>{{supply.supply.name}}</td>
+                    <td>{{supply.quantity}} {{supply.supply.unit}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Complete Task</h2>
+        <form clrForm>
+            <clr-input-container>
+                <label>Meter Reading at Completion</label>
+                <input clrInput type="number" [(ngModel)]="task.completed_meter_reading" required
+                    name="completed_meter_reading" />
+                    <clr-control-helper>{{machine.meter_unit |
+                        unitPlural}}</clr-control-helper>
+            </clr-input-container>
+            <clr-date-container>
+                <label>Completed Date</label>
+                <input type="date" autocomplete="off" clrDate name="completed_date" required [(ngModel)]="task.completed_date" />
+            </clr-date-container>
+            <clr-textarea-container>
+                <label>Notes</label>
+                <textarea clrTextarea type="text" [(ngModel)]="task.notes" name="notes"></textarea>
+            </clr-textarea-container>
+        </form>
+    </div>
+    <div class="side-panel-footer">
+        <button class="btn btn-outline" (click)="completeTask()">Complete</button>
+        <button class="btn btn-outline" (click)="cancel()">Close</button>
+    </div>
+</clr-side-panel>

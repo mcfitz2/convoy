@@ -1,0 +1,6 @@
+fastapi[standard]
+pydantic==2.8.2
+SQLAlchemy==2.0.31
+sqlmodel==0.0.21
+python-dateutil
+psycopg2-binary

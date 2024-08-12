@@ -1,0 +1,60 @@
+<clr-side-panel [(clrSidePanelOpen)]="open" (clrSidePanelAlternateClose)="close.emit()"
+    [clrSidePanelPreventClose]="true">
+    <h3 class="side-panel-title">{{supply?.name || 'Add Supply'}}</h3>
+    <div class="side-panel-body">
+        <form [formGroup]="supplyForm" clrForm>
+            <clr-select-container>
+                <label>Machine</label>
+                <select clrSelect name="options" formControlName="machine_id">
+                    <option *ngFor="let machine of machines" [value]="null" [selected]="true">Universal</option>
+                    <option *ngFor="let machine of machines" [value]="machine.id">{{machine.name}}</option>
+                </select>
+            </clr-select-container>
+            <clr-input-container>
+                <label>Name</label>
+                <input clrInput type="text" formControlName="name" required name="name" />
+            </clr-input-container>
+            <clr-input-container>
+                <label>Quantity On Hand</label>
+                <input clrInput type="number" formControlName="quantity_on_hand" required name="quantity_on_hand" />
+            </clr-input-container>
+            <clr-select-container>
+                <label>Unit</label>
+
+                    <select clrSelect name="options" formControlName="unit">
+                        <option *ngFor="let unit of units" value="{{unit}}">{{unit}}</option>
+                    </select>
+                </clr-select-container>
+            <button class="btn btn-icon" (click)="addEmptyPart()"><cds-icon shape="plus-circle"></cds-icon></button>
+            <h4>Part Numbers</h4>
+            <div formArrayName="parts">
+                <table class="table">
+
+                    <div *ngFor="let part of supplyForm.controls.parts.controls; let i = index">
+                        <div [formGroupName]="i">
+                            <tr>
+                                <td><cds-input slot="controls" layout="vertical" cds-control>
+                                        <input slot="input" placeholder="Name" type="text" formControlName="name"
+                                            required name="name" />
+                                    </cds-input></td>
+                                <td><cds-input slot="controls" layout="vertical" cds-input>
+                                        <input slot="input" placeholder="Reorder Link" type="text"
+                                            formControlName="link" required name="link" />
+                                    </cds-input></td>
+                                <td><button class="btn-icon btn btn-sm" (click)="deletePart(i)"><cds-icon shape="trash"></cds-icon></button></td>
+                            </tr>
+                        </div>
+                    </div>
+                </table>
+
+            </div>
+    </form>
+
+    </div>
+    <div class="side-panel-footer">
+        <button *ngIf="!create" type="button" class="btn btn-outline btn-danger"
+            (click)="deleteSupply()">Delete</button>
+        <button type="button" class="btn btn-outline" (click)="close.emit()">Cancel</button>
+        <button type="button" class="btn btn-primary" [disabled]="!supplyForm.valid" (click)="submit()">Submit</button>
+    </div>
+</clr-side-panel>

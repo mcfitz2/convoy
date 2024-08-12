@@ -1,0 +1,14 @@
+<clr-datagrid>
+    <clr-dg-column>Name</clr-dg-column>
+    <clr-dg-column>Quantity</clr-dg-column>
+    <clr-dg-column></clr-dg-column>
+    <clr-dg-row *ngFor="let msupply of supplies">
+        <clr-dg-cell>{{msupply.supply.name}}</clr-dg-cell>
+        <clr-dg-cell>{{msupply.supply.quantity_on_hand}} {{msupply.supply.unit}}</clr-dg-cell>
+        <clr-dg-cell><button class="btn btn-link">View Details</button></clr-dg-cell>
+    </clr-dg-row>
+    <clr-dg-footer><span style="float: left">
+            <button class="btn btn-sm btn-icon" (click)="addOne()"><cds-icon shape="plus-circle"></cds-icon></button>
+        </span></clr-dg-footer>
+</clr-datagrid>
+<app-supply-edit [create]="createMode" [open]="showCreate" (close)="closeModal()"></app-supply-edit>
