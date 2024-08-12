@@ -1,0 +1,16 @@
+services:
+  app:
+    build: 
+      dockerfile: Dockerfile
+      context: ./
+    ports:
+      - 8000:80
+    environment:
+      - ENV=production
+      - DB_USER=postgres
+      - DB_PASS=cl0ser2g0d
+      - DB_HOST=192.168.1.56
+      - DB_PORT=5432
+      - DB_NAME=greatlakes
+      - DB_SCHEMA=convoy
+
