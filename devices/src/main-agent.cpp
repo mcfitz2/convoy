@@ -1,11 +1,14 @@
 #include <Arduino.h>
+#include <SPI.h>
 #include <Adafruit_MCP2515.h>
 #include <RadioLib.h>
 #include <Wire.h>
+#include <config.h>
+
 
 #define CS_PIN PIN_CAN_CS
 #define INT_PIN PIN_CAN_INTERRUPT
-#define START_HEADER "Convoy Agent"
+#define START_HEADER "Convoy Agent" Commit: COMMIT_HASH
 #define CAN_BAUDRATE (500000)
 
 #define PID_RESPONSE_ID 0x7E8
@@ -56,11 +59,14 @@ float parseOBDPacket()
     case DISTANCE_TRAVELED_WITH_MIL_ON:
     case DISTANCE_TRAVELED_SINCE_CODES_CLEARED:
         return (A * 256.0 + B);
+    default:
+        return 0.0;
     }
 }
 
 float parseVINPacket()
 {
+    return 0.0;
 }
 void onReceive(int packetSize)
 {
@@ -93,7 +99,7 @@ void initRadio()
             ;
     }
     radio.setPacketSentAction(setFlag);
-    radio.setFrequency(433.0);
+    radio.setFrequency(FREQ);
 }
 void initCAN()
 {

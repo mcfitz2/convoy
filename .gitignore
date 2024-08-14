@@ -47,3 +47,4 @@ ui/node_modules
 ui/dist
 backend/convoy.db
 ui/.vscode
+devices/.pio
