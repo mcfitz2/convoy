@@ -8,7 +8,7 @@
 
 #define CS_PIN PIN_CAN_CS
 #define INT_PIN PIN_CAN_INTERRUPT
-#define START_HEADER "Convoy Agent" Commit: COMMIT_HASH
+#define START_HEADER "Convoy Agent Commit:" COMMIT_HASH
 #define CAN_BAUDRATE (500000)
 
 #define PID_RESPONSE_ID 0x7E8

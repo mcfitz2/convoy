@@ -3,7 +3,7 @@
 #include <Wire.h>
 #include <config.h>
 
-#define START_HEADER "Convoy Base Station" Commit: COMMIT_HASH
+#define START_HEADER "Convoy Base Station Commit: " COMMIT_HASH
 
 #define CC1101_CS_PIN 10
 #define CC1101_GDO0_PIN 2
