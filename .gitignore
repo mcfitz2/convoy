@@ -48,3 +48,5 @@ ui/dist
 backend/convoy.db
 ui/.vscode
 devices/.pio
+devices/.vscode
+.vscode
