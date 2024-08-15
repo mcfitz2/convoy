@@ -44,7 +44,7 @@
         <form clrForm>
             <clr-select-container>
                 <label>Machine</label>
-                <select clrSelect name="options" [(ngModel)]="selectedMachineId">
+                <select clrSelect name="options" (change)="reloadSupplies()" [(ngModel)]="selectedMachineId">
                     <option *ngFor="let machine of machines" value="{{machine.id}}">{{machine.name}}</option>
                 </select>
             </clr-select-container>

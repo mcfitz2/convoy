@@ -1,13 +1,13 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { TaskDefinition, TaskDetailed } from 'src/client';
 import { UnitPluralPipe } from './unit-plural.pipe';
+import { TaskSchema } from 'src/client';
 
 @Pipe({
   name: 'overdue',
 })
 export class OverduePipe implements PipeTransform {
 
-  transform(task: TaskDetailed, mode?: string): string {
+  transform(task: TaskSchema, mode?: string): string {
     if (task) {
       if (mode == 'current') {
         if (task.overdue_reason == 'METER') {

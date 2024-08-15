@@ -5,6 +5,38 @@ export type APIResponse = {
     status: Status;
 };
 
+export type AssignedTaskSupplySchema = {
+    quantity?: number;
+    supply_id: string;
+};
+
+export type CompleteTaskSchema = {
+    id: string;
+    completed?: boolean;
+    completed_date: Date;
+    completed_meter_reading: number;
+    notes?: string | null;
+};
+
+export type CreateMachineSchema = {
+    make: string;
+    model: string;
+    year: number;
+    image?: string | null;
+    meter_unit: string;
+};
+
+export type CreateTaskDefinitionSchema = {
+    description: string;
+    time_interval: number;
+    meter_interval: number;
+    recurring?: boolean | null;
+    notes?: string | null;
+    machine_id: string | null;
+    initial_due_meter?: number | null;
+    initial_due_date?: Date | null;
+};
+
 export type HTTPValidationError = {
     detail?: Array<ValidationError>;
 };
@@ -19,15 +51,7 @@ export type Machine = {
     purchase_date?: Date | null;
 };
 
-export type MachineCreate = {
-    make: string;
-    model: string;
-    year: number;
-    image?: string | null;
-    meter_unit: string;
-};
-
-export type MachineDetailed = {
+export type MachineSchema = {
     id: string;
     make: string;
     model: string;
@@ -36,7 +60,7 @@ export type MachineDetailed = {
     meter_unit: string;
     meter_readings: Array<MeterReading>;
     task_definitions: Array<TaskDefinition>;
-    tasks: Array<TaskDetailed>;
+    tasks: Array<TaskSchema>;
     readonly current_meter_reading: number | null;
     readonly name: number;
 };
@@ -46,6 +70,14 @@ export type MeterReading = {
     value: number;
     timestamp?: Date;
     machine_id?: string | null;
+};
+
+export type MeterReadingSchema = {
+    id?: string;
+    value: number;
+    timestamp?: Date;
+    machine_id: string | null;
+    machine: Machine;
 };
 
 export type Part = {
@@ -65,33 +97,13 @@ export type Supply = {
     machine_id?: string | null;
 };
 
-export type SupplyDetailed = {
+export type SupplySchema = {
     id?: string;
     name: string;
     unit: string;
     quantity_on_hand?: number;
     parts?: Array<Part>;
     machine_id: string | null;
-};
-
-export type Task = {
-    id?: string;
-    completed?: boolean;
-    completed_date?: Date | null;
-    completed_meter_reading?: number | null;
-    due_date: Date;
-    due_meter_reading?: number;
-    notes?: string | null;
-    task_definition_id?: string | null;
-    machine_id?: string | null;
-};
-
-export type TaskComplete = {
-    id: string;
-    completed?: boolean;
-    completed_date: Date;
-    completed_meter_reading: number;
-    notes?: string | null;
 };
 
 export type TaskDefinition = {
@@ -104,18 +116,7 @@ export type TaskDefinition = {
     machine_id?: string | null;
 };
 
-export type TaskDefinitionCreate = {
-    description: string;
-    time_interval: number;
-    meter_interval: number;
-    recurring?: boolean | null;
-    notes?: string | null;
-    machine_id: string | null;
-    initial_due_meter?: number | null;
-    initial_due_date?: Date | null;
-};
-
-export type TaskDefinitionDetailed = {
+export type TaskDefinitionSchema = {
     id: string;
     description: string;
     time_interval: number;
@@ -123,10 +124,10 @@ export type TaskDefinitionDetailed = {
     recurring?: boolean | null;
     notes?: string | null;
     machine_id: string | null;
-    supplies: Array<TaskSupplyDetailed>;
+    supplies: Array<TaskSupplySchema>;
 };
 
-export type TaskDetailed = {
+export type TaskSchema = {
     id?: string;
     completed?: boolean;
     completed_date?: Date | null;
@@ -135,7 +136,7 @@ export type TaskDetailed = {
     due_meter_reading?: number;
     notes?: string | null;
     task_definition_id: string | null;
-    task_definition: TaskDefinitionDetailed | null;
+    task_definition: TaskDefinitionSchema | null;
     machine_id: string | null;
     machine: Machine;
     readonly due_meter_ago: number;
@@ -143,17 +144,10 @@ export type TaskDetailed = {
     readonly overdue_reason: string;
 };
 
-export type TaskSupply = {
-    id?: string;
+export type TaskSupplySchema = {
     quantity?: number;
-    task_definition_id?: string | null;
-    supply_id?: string | null;
-};
-
-export type TaskSupplyDetailed = {
-    id: string;
-    quantity?: number;
-    supply: SupplyDetailed;
+    supply_id: string;
+    supply: Supply;
 };
 
 export type ValidationError = {
@@ -162,38 +156,38 @@ export type ValidationError = {
     type: string;
 };
 
-export type GetMachinesResponse = Array<MachineDetailed>;
+export type GetMachinesResponse = Array<MachineSchema>;
 
 export type CreateMachineData = {
-    requestBody: MachineCreate;
+    requestBody: CreateMachineSchema;
 };
 
-export type CreateMachineResponse = Machine;
+export type CreateMachineResponse = MachineSchema;
 
-export type GetSuppliesResponse = Array<SupplyDetailed>;
+export type GetSuppliesResponse = Array<SupplySchema>;
 
 export type CreateSupplyData = {
-    requestBody: Supply;
+    requestBody: SupplySchema;
 };
 
-export type CreateSupplyResponse = Supply;
+export type CreateSupplyResponse = SupplySchema;
 
 export type DeleteSupplyData = {
     supplyId: unknown;
 };
 
-export type DeleteSupplyResponse = Supply;
+export type DeleteSupplyResponse = SupplySchema;
 
 export type UpdateSupplyData = {
-    requestBody: Supply;
+    requestBody: SupplySchema;
     supplyId: string;
 };
 
-export type UpdateSupplyResponse = Supply;
+export type UpdateSupplyResponse = SupplySchema;
 
 export type AssignSuppliesData = {
     machineId: string;
-    requestBody: Array<TaskSupply>;
+    requestBody: Array<AssignedTaskSupplySchema>;
     taskDefId: string;
 };
 
@@ -203,26 +197,26 @@ export type GetMachineData = {
     machineId: string;
 };
 
-export type GetMachineResponse = Machine;
+export type GetMachineResponse = MachineSchema;
 
 export type DeleteMachineData = {
     machineId: string;
 };
 
-export type DeleteMachineResponse = Machine;
+export type DeleteMachineResponse = MachineSchema;
 
 export type UpdateMachineData = {
     machineId: string;
-    requestBody: MachineCreate;
+    requestBody: CreateMachineSchema;
 };
 
-export type UpdateMachineResponse = Machine;
+export type UpdateMachineResponse = MachineSchema;
 
 export type GetReadingsData = {
     machineId: string;
 };
 
-export type GetReadingsResponse = Array<MeterReading>;
+export type GetReadingsResponse = Array<MeterReadingSchema>;
 
 export type CreateReadingData = {
     machineId: string;
@@ -242,24 +236,24 @@ export type GetTasksData = {
     machineId: string;
 };
 
-export type GetTasksResponse = Array<TaskDetailed>;
+export type GetTasksResponse = Array<TaskSchema>;
 
 export type GetTaskData = {
     machineId: string;
     taskId: string;
 };
 
-export type GetTaskResponse = TaskDetailed;
+export type GetTaskResponse = TaskSchema;
 
 export type GetTaskDefinitionsData = {
     machineId: string;
 };
 
-export type GetTaskDefinitionsResponse = Array<TaskDefinition>;
+export type GetTaskDefinitionsResponse = Array<TaskDefinitionSchema>;
 
 export type CreateTaskDefinitionData = {
     machineId: string;
-    requestBody: TaskDefinitionCreate;
+    requestBody: CreateTaskDefinitionSchema;
 };
 
 export type CreateTaskDefinitionResponse = TaskDefinition;
@@ -269,26 +263,26 @@ export type GetTaskDefinitionData = {
     taskDefinitionId: string;
 };
 
-export type GetTaskDefinitionResponse = TaskDefinition;
+export type GetTaskDefinitionResponse = TaskDefinitionSchema;
 
 export type DeleteTaskData = {
     taskId: string;
 };
 
-export type DeleteTaskResponse = Task;
+export type DeleteTaskResponse = TaskSchema;
 
 export type DeleteTaskDefinitionData = {
     taskId: string;
 };
 
-export type DeleteTaskDefinitionResponse = TaskDefinition;
+export type DeleteTaskDefinitionResponse = TaskDefinitionSchema;
 
 export type CompleteTaskData = {
-    requestBody: TaskComplete;
+    requestBody: CompleteTaskSchema;
     taskId: string;
 };
 
-export type CompleteTaskResponse = Task;
+export type CompleteTaskResponse = TaskSchema;
 
 export type $OpenApiTs = {
     '/api/v1/machines': {
@@ -297,7 +291,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: Array<MachineDetailed>;
+                200: Array<MachineSchema>;
             };
         };
         post: {
@@ -306,7 +300,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: Machine;
+                200: MachineSchema;
                 /**
                  * Validation Error
                  */
@@ -320,7 +314,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: Array<SupplyDetailed>;
+                200: Array<SupplySchema>;
             };
         };
         post: {
@@ -329,7 +323,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: Supply;
+                200: SupplySchema;
                 /**
                  * Validation Error
                  */
@@ -344,7 +338,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: Supply;
+                200: SupplySchema;
                 /**
                  * Validation Error
                  */
@@ -357,7 +351,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: Supply;
+                200: SupplySchema;
                 /**
                  * Validation Error
                  */
@@ -387,7 +381,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: Machine;
+                200: MachineSchema;
                 /**
                  * Validation Error
                  */
@@ -400,7 +394,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: Machine;
+                200: MachineSchema;
                 /**
                  * Validation Error
                  */
@@ -413,7 +407,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: Machine;
+                200: MachineSchema;
                 /**
                  * Validation Error
                  */
@@ -428,7 +422,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: Array<MeterReading>;
+                200: Array<MeterReadingSchema>;
                 /**
                  * Validation Error
                  */
@@ -471,7 +465,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: Array<TaskDetailed>;
+                200: Array<TaskSchema>;
                 /**
                  * Validation Error
                  */
@@ -486,7 +480,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: TaskDetailed;
+                200: TaskSchema;
                 /**
                  * Validation Error
                  */
@@ -501,7 +495,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: Array<TaskDefinition>;
+                200: Array<TaskDefinitionSchema>;
                 /**
                  * Validation Error
                  */
@@ -529,7 +523,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: TaskDefinition;
+                200: TaskDefinitionSchema;
                 /**
                  * Validation Error
                  */
@@ -544,7 +538,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: Task;
+                200: TaskSchema;
                 /**
                  * Validation Error
                  */
@@ -559,7 +553,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: TaskDefinition;
+                200: TaskDefinitionSchema;
                 /**
                  * Validation Error
                  */
@@ -574,7 +568,7 @@ export type $OpenApiTs = {
                 /**
                  * Successful Response
                  */
-                200: Task;
+                200: TaskSchema;
                 /**
                  * Validation Error
                  */
@@ -586,7 +580,7 @@ export type $OpenApiTs = {
 
 export type GetMachinesResponseTransformer = (data: any) => Promise<GetMachinesResponse>;
 
-export type MachineDetailedModelResponseTransformer = (data: any) => MachineDetailed;
+export type MachineSchemaModelResponseTransformer = (data: any) => MachineSchema;
 
 export type MeterReadingModelResponseTransformer = (data: any) => MeterReading;
 
@@ -597,37 +591,74 @@ export const MeterReadingModelResponseTransformer: MeterReadingModelResponseTran
     return data;
 };
 
-export type TaskDetailedModelResponseTransformer = (data: any) => TaskDetailed;
+export type TaskSchemaModelResponseTransformer = (data: any) => TaskSchema;
 
-export const TaskDetailedModelResponseTransformer: TaskDetailedModelResponseTransformer = data => {
+export const TaskSchemaModelResponseTransformer: TaskSchemaModelResponseTransformer = data => {
     if (data?.due_date) {
         data.due_date = new Date(data.due_date);
     }
     return data;
 };
 
-export const MachineDetailedModelResponseTransformer: MachineDetailedModelResponseTransformer = data => {
+export const MachineSchemaModelResponseTransformer: MachineSchemaModelResponseTransformer = data => {
     if (Array.isArray(data?.meter_readings)) {
         data.meter_readings.forEach(MeterReadingModelResponseTransformer);
     }
     if (Array.isArray(data?.tasks)) {
-        data.tasks.forEach(TaskDetailedModelResponseTransformer);
+        data.tasks.forEach(TaskSchemaModelResponseTransformer);
     }
     return data;
 };
 
 export const GetMachinesResponseTransformer: GetMachinesResponseTransformer = async (data) => {
     if (Array.isArray(data)) {
-        data.forEach(MachineDetailedModelResponseTransformer);
+        data.forEach(MachineSchemaModelResponseTransformer);
     }
+    return data;
+};
+
+export type CreateMachineResponseTransformer = (data: any) => Promise<CreateMachineResponse>;
+
+export const CreateMachineResponseTransformer: CreateMachineResponseTransformer = async (data) => {
+    MachineSchemaModelResponseTransformer(data);
+    return data;
+};
+
+export type GetMachineResponseTransformer = (data: any) => Promise<GetMachineResponse>;
+
+export const GetMachineResponseTransformer: GetMachineResponseTransformer = async (data) => {
+    MachineSchemaModelResponseTransformer(data);
+    return data;
+};
+
+export type DeleteMachineResponseTransformer = (data: any) => Promise<DeleteMachineResponse>;
+
+export const DeleteMachineResponseTransformer: DeleteMachineResponseTransformer = async (data) => {
+    MachineSchemaModelResponseTransformer(data);
+    return data;
+};
+
+export type UpdateMachineResponseTransformer = (data: any) => Promise<UpdateMachineResponse>;
+
+export const UpdateMachineResponseTransformer: UpdateMachineResponseTransformer = async (data) => {
+    MachineSchemaModelResponseTransformer(data);
     return data;
 };
 
 export type GetReadingsResponseTransformer = (data: any) => Promise<GetReadingsResponse>;
 
+export type MeterReadingSchemaModelResponseTransformer = (data: any) => MeterReadingSchema;
+
+export const MeterReadingSchemaModelResponseTransformer: MeterReadingSchemaModelResponseTransformer = data => {
+    if (data?.timestamp) {
+        data.timestamp = new Date(data.timestamp);
+    }
+    return data;
+};
+
 export const GetReadingsResponseTransformer: GetReadingsResponseTransformer = async (data) => {
     if (Array.isArray(data)) {
-        data.forEach(MeterReadingModelResponseTransformer);
+        data.forEach(MeterReadingSchemaModelResponseTransformer);
     }
     return data;
 };
@@ -650,7 +681,7 @@ export type GetTasksResponseTransformer = (data: any) => Promise<GetTasksRespons
 
 export const GetTasksResponseTransformer: GetTasksResponseTransformer = async (data) => {
     if (Array.isArray(data)) {
-        data.forEach(TaskDetailedModelResponseTransformer);
+        data.forEach(TaskSchemaModelResponseTransformer);
     }
     return data;
 };
@@ -658,29 +689,20 @@ export const GetTasksResponseTransformer: GetTasksResponseTransformer = async (d
 export type GetTaskResponseTransformer = (data: any) => Promise<GetTaskResponse>;
 
 export const GetTaskResponseTransformer: GetTaskResponseTransformer = async (data) => {
-    TaskDetailedModelResponseTransformer(data);
+    TaskSchemaModelResponseTransformer(data);
     return data;
 };
 
 export type DeleteTaskResponseTransformer = (data: any) => Promise<DeleteTaskResponse>;
 
-export type TaskModelResponseTransformer = (data: any) => Task;
-
-export const TaskModelResponseTransformer: TaskModelResponseTransformer = data => {
-    if (data?.due_date) {
-        data.due_date = new Date(data.due_date);
-    }
-    return data;
-};
-
 export const DeleteTaskResponseTransformer: DeleteTaskResponseTransformer = async (data) => {
-    TaskModelResponseTransformer(data);
+    TaskSchemaModelResponseTransformer(data);
     return data;
 };
 
 export type CompleteTaskResponseTransformer = (data: any) => Promise<CompleteTaskResponse>;
 
 export const CompleteTaskResponseTransformer: CompleteTaskResponseTransformer = async (data) => {
-    TaskModelResponseTransformer(data);
+    TaskSchemaModelResponseTransformer(data);
     return data;
 };

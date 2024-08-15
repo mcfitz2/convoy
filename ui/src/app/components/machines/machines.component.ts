@@ -1,7 +1,6 @@
-import { NgFor } from '@angular/common';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { Machine, MachineCreate, MachineDetailed, createMachine, getMachines } from 'src/client';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { CreateMachineSchema, MachineSchema, getMachines } from 'src/client';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-machines',
@@ -9,13 +8,13 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
   styleUrl: './machines.component.css'
 })
 export class MachinesComponent implements OnInit {
-  public machines: MachineDetailed[] = [];
+  public machines: MachineSchema[] = [];
   public loading: boolean = true;
   public createMode: boolean = false;
   protected readonly form = new FormGroup({
     files: new FormControl<FileList | null>(null),
   });
-  public machine: MachineCreate = {
+  public machine: CreateMachineSchema = {
     meter_unit: '',
     make: '',
     model: '',

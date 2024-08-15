@@ -3,11 +3,11 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import { type GetMachinesResponse, type CreateMachineData, type CreateMachineResponse, type GetSuppliesResponse, type CreateSupplyData, type CreateSupplyResponse, type DeleteSupplyData, type DeleteSupplyResponse, type UpdateSupplyData, type UpdateSupplyResponse, type AssignSuppliesData, type AssignSuppliesResponse, type GetMachineData, type GetMachineResponse, type DeleteMachineData, type DeleteMachineResponse, type UpdateMachineData, type UpdateMachineResponse, type GetReadingsData, type GetReadingsResponse, type CreateReadingData, type CreateReadingResponse, type GetReadingData, type GetReadingResponse, type GetTasksData, type GetTasksResponse, type GetTaskData, type GetTaskResponse, type GetTaskDefinitionsData, type GetTaskDefinitionsResponse, type CreateTaskDefinitionData, type CreateTaskDefinitionResponse, type GetTaskDefinitionData, type GetTaskDefinitionResponse, type DeleteTaskData, type DeleteTaskResponse, type DeleteTaskDefinitionData, type DeleteTaskDefinitionResponse, type CompleteTaskData, type CompleteTaskResponse, GetMachinesResponseTransformer, GetReadingsResponseTransformer, CreateReadingResponseTransformer, GetReadingResponseTransformer, GetTasksResponseTransformer, GetTaskResponseTransformer, DeleteTaskResponseTransformer, CompleteTaskResponseTransformer } from './types.gen';
+import { type GetMachinesResponse, type CreateMachineData, type CreateMachineResponse, type GetSuppliesResponse, type CreateSupplyData, type CreateSupplyResponse, type DeleteSupplyData, type DeleteSupplyResponse, type UpdateSupplyData, type UpdateSupplyResponse, type AssignSuppliesData, type AssignSuppliesResponse, type GetMachineData, type GetMachineResponse, type DeleteMachineData, type DeleteMachineResponse, type UpdateMachineData, type UpdateMachineResponse, type GetReadingsData, type GetReadingsResponse, type CreateReadingData, type CreateReadingResponse, type GetReadingData, type GetReadingResponse, type GetTasksData, type GetTasksResponse, type GetTaskData, type GetTaskResponse, type GetTaskDefinitionsData, type GetTaskDefinitionsResponse, type CreateTaskDefinitionData, type CreateTaskDefinitionResponse, type GetTaskDefinitionData, type GetTaskDefinitionResponse, type DeleteTaskData, type DeleteTaskResponse, type DeleteTaskDefinitionData, type DeleteTaskDefinitionResponse, type CompleteTaskData, type CompleteTaskResponse, GetMachinesResponseTransformer, CreateMachineResponseTransformer, GetMachineResponseTransformer, DeleteMachineResponseTransformer, UpdateMachineResponseTransformer, GetReadingsResponseTransformer, CreateReadingResponseTransformer, GetReadingResponseTransformer, GetTasksResponseTransformer, GetTaskResponseTransformer, DeleteTaskResponseTransformer, CompleteTaskResponseTransformer } from './types.gen';
 
 /**
  * Get Machines
- * @returns MachineDetailed Successful Response
+ * @returns MachineSchema Successful Response
  * @throws ApiError
  */
 export const getMachines = (): CancelablePromise<GetMachinesResponse> => { return __request(OpenAPI, {
@@ -20,7 +20,7 @@ export const getMachines = (): CancelablePromise<GetMachinesResponse> => { retur
  * Create Machine
  * @param data The data for the request.
  * @param data.requestBody
- * @returns Machine Successful Response
+ * @returns MachineSchema Successful Response
  * @throws ApiError
  */
 export const createMachine = (data: CreateMachineData): CancelablePromise<CreateMachineResponse> => { return __request(OpenAPI, {
@@ -28,6 +28,7 @@ export const createMachine = (data: CreateMachineData): CancelablePromise<Create
     url: '/api/v1/machines',
     body: data.requestBody,
     mediaType: 'application/json',
+    responseTransformer: CreateMachineResponseTransformer,
     errors: {
         422: 'Validation Error'
     }
@@ -35,7 +36,7 @@ export const createMachine = (data: CreateMachineData): CancelablePromise<Create
 
 /**
  * Get Supplies
- * @returns SupplyDetailed Successful Response
+ * @returns SupplySchema Successful Response
  * @throws ApiError
  */
 export const getSupplies = (): CancelablePromise<GetSuppliesResponse> => { return __request(OpenAPI, {
@@ -47,7 +48,7 @@ export const getSupplies = (): CancelablePromise<GetSuppliesResponse> => { retur
  * Create Supply
  * @param data The data for the request.
  * @param data.requestBody
- * @returns Supply Successful Response
+ * @returns SupplySchema Successful Response
  * @throws ApiError
  */
 export const createSupply = (data: CreateSupplyData): CancelablePromise<CreateSupplyResponse> => { return __request(OpenAPI, {
@@ -64,7 +65,7 @@ export const createSupply = (data: CreateSupplyData): CancelablePromise<CreateSu
  * Delete Supply
  * @param data The data for the request.
  * @param data.supplyId
- * @returns Supply Successful Response
+ * @returns SupplySchema Successful Response
  * @throws ApiError
  */
 export const deleteSupply = (data: DeleteSupplyData): CancelablePromise<DeleteSupplyResponse> => { return __request(OpenAPI, {
@@ -83,7 +84,7 @@ export const deleteSupply = (data: DeleteSupplyData): CancelablePromise<DeleteSu
  * @param data The data for the request.
  * @param data.supplyId
  * @param data.requestBody
- * @returns Supply Successful Response
+ * @returns SupplySchema Successful Response
  * @throws ApiError
  */
 export const updateSupply = (data: UpdateSupplyData): CancelablePromise<UpdateSupplyResponse> => { return __request(OpenAPI, {
@@ -126,7 +127,7 @@ export const assignSupplies = (data: AssignSuppliesData): CancelablePromise<Assi
  * Get Machine
  * @param data The data for the request.
  * @param data.machineId
- * @returns Machine Successful Response
+ * @returns MachineSchema Successful Response
  * @throws ApiError
  */
 export const getMachine = (data: GetMachineData): CancelablePromise<GetMachineResponse> => { return __request(OpenAPI, {
@@ -135,6 +136,7 @@ export const getMachine = (data: GetMachineData): CancelablePromise<GetMachineRe
     path: {
         machine_id: data.machineId
     },
+    responseTransformer: GetMachineResponseTransformer,
     errors: {
         422: 'Validation Error'
     }
@@ -144,7 +146,7 @@ export const getMachine = (data: GetMachineData): CancelablePromise<GetMachineRe
  * Delete Machine
  * @param data The data for the request.
  * @param data.machineId
- * @returns Machine Successful Response
+ * @returns MachineSchema Successful Response
  * @throws ApiError
  */
 export const deleteMachine = (data: DeleteMachineData): CancelablePromise<DeleteMachineResponse> => { return __request(OpenAPI, {
@@ -153,6 +155,7 @@ export const deleteMachine = (data: DeleteMachineData): CancelablePromise<Delete
     path: {
         machine_id: data.machineId
     },
+    responseTransformer: DeleteMachineResponseTransformer,
     errors: {
         422: 'Validation Error'
     }
@@ -163,7 +166,7 @@ export const deleteMachine = (data: DeleteMachineData): CancelablePromise<Delete
  * @param data The data for the request.
  * @param data.machineId
  * @param data.requestBody
- * @returns Machine Successful Response
+ * @returns MachineSchema Successful Response
  * @throws ApiError
  */
 export const updateMachine = (data: UpdateMachineData): CancelablePromise<UpdateMachineResponse> => { return __request(OpenAPI, {
@@ -174,6 +177,7 @@ export const updateMachine = (data: UpdateMachineData): CancelablePromise<Update
     },
     body: data.requestBody,
     mediaType: 'application/json',
+    responseTransformer: UpdateMachineResponseTransformer,
     errors: {
         422: 'Validation Error'
     }
@@ -183,7 +187,7 @@ export const updateMachine = (data: UpdateMachineData): CancelablePromise<Update
  * Get Readings
  * @param data The data for the request.
  * @param data.machineId
- * @returns MeterReading Successful Response
+ * @returns MeterReadingSchema Successful Response
  * @throws ApiError
  */
 export const getReadings = (data: GetReadingsData): CancelablePromise<GetReadingsResponse> => { return __request(OpenAPI, {
@@ -245,7 +249,7 @@ export const getReading = (data: GetReadingData): CancelablePromise<GetReadingRe
  * Get Tasks
  * @param data The data for the request.
  * @param data.machineId
- * @returns TaskDetailed Successful Response
+ * @returns TaskSchema Successful Response
  * @throws ApiError
  */
 export const getTasks = (data: GetTasksData): CancelablePromise<GetTasksResponse> => { return __request(OpenAPI, {
@@ -265,7 +269,7 @@ export const getTasks = (data: GetTasksData): CancelablePromise<GetTasksResponse
  * @param data The data for the request.
  * @param data.machineId
  * @param data.taskId
- * @returns TaskDetailed Successful Response
+ * @returns TaskSchema Successful Response
  * @throws ApiError
  */
 export const getTask = (data: GetTaskData): CancelablePromise<GetTaskResponse> => { return __request(OpenAPI, {
@@ -285,7 +289,7 @@ export const getTask = (data: GetTaskData): CancelablePromise<GetTaskResponse> =
  * Get Task Definitions
  * @param data The data for the request.
  * @param data.machineId
- * @returns TaskDefinition Successful Response
+ * @returns TaskDefinitionSchema Successful Response
  * @throws ApiError
  */
 export const getTaskDefinitions = (data: GetTaskDefinitionsData): CancelablePromise<GetTaskDefinitionsResponse> => { return __request(OpenAPI, {
@@ -325,7 +329,7 @@ export const createTaskDefinition = (data: CreateTaskDefinitionData): Cancelable
  * @param data The data for the request.
  * @param data.machineId
  * @param data.taskDefinitionId
- * @returns TaskDefinition Successful Response
+ * @returns TaskDefinitionSchema Successful Response
  * @throws ApiError
  */
 export const getTaskDefinition = (data: GetTaskDefinitionData): CancelablePromise<GetTaskDefinitionResponse> => { return __request(OpenAPI, {
@@ -344,7 +348,7 @@ export const getTaskDefinition = (data: GetTaskDefinitionData): CancelablePromis
  * Delete Task
  * @param data The data for the request.
  * @param data.taskId
- * @returns Task Successful Response
+ * @returns TaskSchema Successful Response
  * @throws ApiError
  */
 export const deleteTask = (data: DeleteTaskData): CancelablePromise<DeleteTaskResponse> => { return __request(OpenAPI, {
@@ -363,7 +367,7 @@ export const deleteTask = (data: DeleteTaskData): CancelablePromise<DeleteTaskRe
  * Delete Task Definition
  * @param data The data for the request.
  * @param data.taskId
- * @returns TaskDefinition Successful Response
+ * @returns TaskDefinitionSchema Successful Response
  * @throws ApiError
  */
 export const deleteTaskDefinition = (data: DeleteTaskDefinitionData): CancelablePromise<DeleteTaskDefinitionResponse> => { return __request(OpenAPI, {
@@ -382,7 +386,7 @@ export const deleteTaskDefinition = (data: DeleteTaskDefinitionData): Cancelable
  * @param data The data for the request.
  * @param data.taskId
  * @param data.requestBody
- * @returns Task Successful Response
+ * @returns TaskSchema Successful Response
  * @throws ApiError
  */
 export const completeTask = (data: CompleteTaskData): CancelablePromise<CompleteTaskResponse> => { return __request(OpenAPI, {

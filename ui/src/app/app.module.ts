@@ -27,6 +27,7 @@ import { TaskSupplyStatusBadgeComponent } from './components/task-supply-status-
 import { SupplyEditComponent } from './components/supply-edit/supply-edit.component';
 import '@cds/core/input/register.js';
 import { CdsModule } from '@cds/angular';
+import { SupplyComponent } from './components/supply/supply.component';
 
 ClarityIcons.addIcons(homeIcon, fuelIcon, tasksIcon, toolsIcon, plusCircleIcon, floppyIcon, trashIcon);
 @NgModule({
@@ -46,7 +47,8 @@ ClarityIcons.addIcons(homeIcon, fuelIcon, tasksIcon, toolsIcon, plusCircleIcon, 
     SuppliesComponent,
     MachineEditComponent,
     TaskSupplyStatusBadgeComponent,
-    SupplyEditComponent
+    SupplyEditComponent,
+    SupplyComponent
   ],
   imports: [
     BrowserModule,

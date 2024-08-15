@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MachineDetailed, TaskComplete, TaskDetailed, completeTask, deleteTask, deleteTaskDefinition } from 'src/client';
+import { MachineSchema, CompleteTaskSchema, TaskSchema, completeTask, deleteTaskDefinition } from 'src/client';
 
 @Component({
   selector: 'app-task',
@@ -7,8 +7,8 @@ import { MachineDetailed, TaskComplete, TaskDetailed, completeTask, deleteTask, 
   styleUrl: './task.component.css'
 })
 export class TaskComponent implements OnInit {
-  @Input() task!: TaskDetailed;
-  @Input() machine!: MachineDetailed;
+  @Input() task!: TaskSchema;
+  @Input() machine!: MachineSchema;
   @Output() refresh = new EventEmitter();
   public showComplete: boolean = false;
   ngOnInit(): void {
@@ -32,7 +32,7 @@ export class TaskComponent implements OnInit {
     this.showComplete = false;
   }
   public completeTask() {
-    const converted: TaskComplete = {id: this.task.id!, completed_date: this.task.completed_date!, completed_meter_reading: this.task.completed_meter_reading!}
+    const converted: CompleteTaskSchema = {id: this.task.id!, completed_date: this.task.completed_date!, completed_meter_reading: this.task.completed_meter_reading!}
     completeTask({taskId: this.task.id!, requestBody: converted}).then((task) => {
       this.showComplete = false;
       this.refresh.emit();

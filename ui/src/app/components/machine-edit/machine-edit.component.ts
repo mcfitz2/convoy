@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Machine, MachineCreate, MachineDetailed, createMachine, createReading, deleteMachine, updateMachine } from 'src/client';
-import { ModalService } from '../../services/modal.service';
+import { CreateMachineSchema, MachineSchema, createMachine, createReading, deleteMachine, updateMachine } from 'src/client';
 import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
@@ -9,7 +8,7 @@ import { FormGroup, FormControl } from '@angular/forms';
   styleUrl: './machine-edit.component.css'
 })
 export class MachineEditComponent implements OnInit {
-  @Input() machine: MachineDetailed = {
+  @Input() machine: MachineSchema = {
     id: '',
     make: '',
     model: '',
@@ -66,11 +65,11 @@ export class MachineEditComponent implements OnInit {
   async submit() {
     try {
       if (this.create) {
-        const newMachine: MachineCreate = this.machineForm.getRawValue();
-        const createdMachine: Machine = await createMachine({ requestBody: newMachine })
+        const newMachine: CreateMachineSchema = this.machineForm.getRawValue();
+        const createdMachine: MachineSchema = await createMachine({ requestBody: newMachine })
         await createReading({ machineId: createdMachine.id, requestBody: { value: this.machineForm.get('meter_value').value } })
       } else {
-        await updateMachine({ machineId: this.machine.id, requestBody: this.machine as MachineCreate })
+        await updateMachine({ machineId: this.machine.id, requestBody: this.machine as CreateMachineSchema })
         if (this.machine.current_meter_reading != this.machineForm.get('meter_value').value) {
           await createReading({ machineId: this.machine.id, requestBody: { value: this.machineForm.get('meter_value').value } })
         }

@@ -1,25 +1,24 @@
 from typing import List
+from schemas import (
+    APIResponse,
+    AssignedTaskSupplySchema,
+    CreateMachineSchema,
+    MachineSchema,
+    MeterReadingSchema,
+    Status,
+    SupplySchema,
+    CompleteTaskSchema,
+    CreateTaskDefinitionSchema,
+    TaskDefinitionSchema,
+    TaskSchema,
+    TaskSupplySchema,
+)
 from utils import (
     custom_generate_unique_id,
     get_session,
     setup_engine,
 )
-from models import (
-    APIResponse,
-    Machine,
-    MachineCreate,
-    MachineDetailed,
-    MeterReading,
-    Status,
-    Supply,
-    SupplyDetailed,
-    Task,
-    TaskComplete,
-    TaskDefinition,
-    TaskDefinitionCreate,
-    TaskDetailed,
-    TaskSupply,
-)
+from models import Machine, MeterReading, Supply, Task, TaskDefinition, TaskSupply
 from fastapi import FastAPI, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -38,24 +37,18 @@ def on_startup():
     SQLModel.metadata.create_all(engine)
 
 
-@app.get("/api/v1/machines", response_model=List[MachineDetailed])
-def get_machines(*, session: Session = Depends(get_session)) -> List[MachineDetailed]:
-    def enrich_machine(m: Machine) -> MachineDetailed:
-        md = MachineDetailed.from_orm(m)
-        return md
-
-    machines = map(enrich_machine, session.exec(select(Machine)).all())
-
-    return machines
+@app.get("/api/v1/machines", response_model=List[MachineSchema])
+def get_machines(*, session: Session = Depends(get_session)) -> List[MachineSchema]:
+    return [MachineSchema.model_validate(m) for m in session.exec(select(Machine)).all()]
 
 
-@app.get("/api/v1/supplies", response_model=List[SupplyDetailed])
-def get_supplies(*, session: Session = Depends(get_session)) -> List[SupplyDetailed]:
-    return [SupplyDetailed.from_orm(s) for s in session.exec(select(Supply)).all()]
+@app.get("/api/v1/supplies", response_model=List[SupplySchema])
+def get_supplies(*, session: Session = Depends(get_session)) -> List[SupplySchema]:
+    return [SupplySchema.model_validate(s) for s in session.exec(select(Supply)).all()]
 
 
-@app.post("/api/v1/supplies", response_model=SupplyDetailed)
-def create_supply(supply: SupplyDetailed, *, session: Session = Depends(get_session)) -> SupplyDetailed:
+@app.post("/api/v1/supplies", response_model=SupplySchema)
+def create_supply(supply: SupplySchema, *, session: Session = Depends(get_session)) -> SupplySchema:
     db_supply = Supply(**dict(supply))
     session.add(db_supply)
 
@@ -65,36 +58,39 @@ def create_supply(supply: SupplyDetailed, *, session: Session = Depends(get_sess
 
     session.commit()
     session.refresh(db_supply)
-    return db_supply
+    return SupplySchema.model_validate(db_supply)
 
 
-@app.delete("/api/v1/supplies/{supply_id}", response_model=Supply)
+@app.delete("/api/v1/supplies/{supply_id}", response_model=SupplySchema)
 def delete_supply(supply_id, *, session: Session = Depends(get_session)) -> Supply:
     supply = session.get(Supply, supply_id)
     session.delete(supply)
     session.commit()
-    return supply
+    return SupplySchema.model_validate(supply)
 
 
 @app.post("/api/v1/machines/{machine_id}/task_definitions/{task_def_id}/supplies", response_model=APIResponse)
-def assign_supplies(machine_id: str, task_def_id: str, supplies: List[TaskSupply], *, session: Session = Depends(get_session)) -> APIResponse:
+def assign_supplies(
+    machine_id: str, task_def_id: str, supplies: List[AssignedTaskSupplySchema], *, session: Session = Depends(get_session)
+) -> APIResponse:
     for task_supply in supplies:
-        task_supply.task_definition_id = task_def_id
-        session.add(task_supply)
+        ts = TaskSupply.model_validate(task_supply)
+        ts.task_definition_id = task_def_id
+        session.add(ts)
     session.commit()
     return APIResponse(status=Status.SUCCESS, message="Supplies assigned")
 
 
-@app.get("/api/v1/machines/{machine_id}", response_model=Machine)
-def get_machine(machine_id: str, *, session: Session = Depends(get_session)) -> Machine:
-    machines = session.exec(select(Machine).where(Machine.id == machine_id).options(selectinload("*"))).one()
-    return machines
+@app.get("/api/v1/machines/{machine_id}", response_model=MachineSchema)
+def get_machine(machine_id: str, *, session: Session = Depends(get_session)) -> MachineSchema:
+    machine = session.exec(select(Machine).where(Machine.id == machine_id).options(selectinload("*"))).one()
+    return MachineSchema.model_validate(machine)
 
 
-@app.get("/api/v1/machines/{machine_id}/readings", response_model=List[MeterReading])
-def get_readings(machine_id: str, *, session: Session = Depends(get_session)) -> List[MeterReading]:
+@app.get("/api/v1/machines/{machine_id}/readings", response_model=List[MeterReadingSchema])
+def get_readings(machine_id: str, *, session: Session = Depends(get_session)) -> List[MeterReadingSchema]:
     readings = session.exec(select(MeterReading).where(MeterReading.machine_id == machine_id)).all()
-    return readings
+    return [MeterReadingSchema.model_validate(reading) for reading in readings]
 
 
 @app.post("/api/v1/machines/{machine_id}/readings", response_model=MeterReading)
@@ -112,29 +108,29 @@ def get_reading(machine_id: str, reading_id: str, *, session: Session = Depends(
     return reading
 
 
-@app.get("/api/v1/machines/{machine_id}/tasks", response_model=List[TaskDetailed])
+@app.get("/api/v1/machines/{machine_id}/tasks", response_model=List[TaskSchema])
 def get_tasks(machine_id: str, *, session: Session = Depends(get_session)) -> List[Task]:
     tasks = session.exec(select(Task).where(Task.machine_id == machine_id)).all()
 
-    return [TaskDetailed(**dict(t)) for t in tasks]
+    return [TaskSchema.model_validate(t) for t in tasks]
 
 
-@app.get("/api/v1/machines/{machine_id}/tasks/{task_id}", response_model=TaskDetailed)
+@app.get("/api/v1/machines/{machine_id}/tasks/{task_id}", response_model=TaskSchema)
 def get_task(machine_id: str, task_id: str, *, session: Session = Depends(get_session)):
     task = session.exec(select(Task).where(Task.id == task_id and Task.machine_id == machine_id)).one()
-    return TaskDetailed(**dict(task))
+    return TaskSchema.model_validate(task)
 
 
-@app.get("/api/v1/machines/{machine_id}/task_definitions", response_model=List[TaskDefinition])
-def get_task_definitions(machine_id: str, *, session: Session = Depends(get_session)) -> List[TaskDefinition]:
+@app.get("/api/v1/machines/{machine_id}/task_definitions", response_model=List[TaskDefinitionSchema])
+def get_task_definitions(machine_id: str, *, session: Session = Depends(get_session)) -> List[TaskDefinitionSchema]:
     task_defs = session.exec(select(TaskDefinition).where(TaskDefinition.machine_id == machine_id)).all()
-    return task_defs
+    return [TaskDefinitionSchema.model_validate(t) for t in task_defs]
 
 
 @app.post("/api/v1/machines/{machine_id}/task_definitions", response_model=TaskDefinition)
 def create_task_definition(
     machine_id: str,
-    task_definition_create: TaskDefinitionCreate,
+    task_definition_create: CreateTaskDefinitionSchema,
     *,
     session: Session = Depends(get_session),
 ) -> TaskDefinition:
@@ -160,14 +156,12 @@ def create_task_definition(
     session.add(new_task)
     session.commit()
     session.refresh(task_definition)
-    return task_definition
+    return TaskDefinitionSchema.model_validate(task_definition)
 
 
-@app.post("/api/v1/machines")
-def create_machine(machine: MachineCreate, *, session: Session = Depends(get_session)) -> Machine:
-    values = dict(machine)
-
-    m = Machine(**values)
+@app.post("/api/v1/machines", response_model=MachineSchema)
+def create_machine(machine: CreateMachineSchema, *, session: Session = Depends(get_session)) -> MachineSchema:
+    m = Machine.model_validate(machine)
     session.add(m)
     reading = MeterReading()
     reading.machine_id = m.id
@@ -176,61 +170,62 @@ def create_machine(machine: MachineCreate, *, session: Session = Depends(get_ses
     session.add(reading)
     session.commit()
     session.refresh(m)
-    return m
+    return MachineSchema.model_validate(m)
 
 
-@app.get("/api/v1/machines/{machine_id}/task_definitions/{task_definition_id}", response_model=TaskDefinition)
+@app.get("/api/v1/machines/{machine_id}/task_definitions/{task_definition_id}", response_model=TaskDefinitionSchema)
 def get_task_definition(machine_id: str, task_definition_id: str, *, session: Session = Depends(get_session)):
     task_def = session.exec(select(TaskDefinition).where(TaskDefinition.id == task_definition_id and TaskDefinition.machine_id == machine_id)).one()
-    return task_def
+    return TaskDefinitionSchema.model_validate(task_def)
 
 
-@app.delete("/api/v1/tasks/{task_id}", response_model=Task)
+@app.delete("/api/v1/tasks/{task_id}", response_model=TaskSchema)
 def delete_task(
     task_id: str,
     *,
     session: Session = Depends(get_session),
-):
+) -> TaskSchema:
     task = session.get(Task, task_id)
     session.delete(task)
     session.commit()
-    return task
+    return TaskSchema.model_validate(task)
 
 
-@app.delete("/api/v1/task_definitions/{task_id}", response_model=TaskDefinition)
+@app.delete("/api/v1/task_definitions/{task_id}", response_model=TaskDefinitionSchema)
 def delete_task_definition(
     task_id: str,
     *,
     session: Session = Depends(get_session),
-):
+) -> TaskDefinitionSchema:
     task = session.get(TaskDefinition, task_id)
     session.delete(task)
     session.commit()
-    return task
+    
+    return TaskDefinitionSchema.model_validate(task)
 
 
-@app.delete("/api/v1/machines/{machine_id}", response_model=Machine)
+@app.delete("/api/v1/machines/{machine_id}", response_model=MachineSchema)
 def delete_machine(
     machine_id: str,
     *,
     session: Session = Depends(get_session),
-):
+) -> MachineSchema:
     machine = session.get(Machine, machine_id)
     session.delete(machine)
     session.commit()
-    return machine
+    return MachineSchema.model_validate(machine)
 
 
-@app.post("/api/v1/tasks/{task_id}/complete", response_model=Task)
+@app.post("/api/v1/tasks/{task_id}/complete", response_model=TaskSchema)
 def complete_task(
-    task_request: TaskComplete,
+    task_request: CompleteTaskSchema,
     task_id: str,
     *,
     session: Session = Depends(get_session),
-):
+) -> TaskSchema:
     task = session.exec(select(Task).where(Task.id == task_id)).one()
     task.completed = True
-    task.sqlmodel_update(**dict(task_request))
+    task.sqlmodel_update(task_request)
     session.add(
         MeterReading(
             machine_id=task.machine_id,
@@ -248,29 +243,29 @@ def complete_task(
         )
         session.add(new_task)
     session.commit()
-    return task
+    return TaskSchema.model_validate(task)
 
 
-@app.patch("/api/v1/supplies/{supply_id}", response_model=Supply)
-def update_supply(supply_id: str, supply: Supply, *, session: Session = Depends(get_session)) -> Supply:
+@app.patch("/api/v1/supplies/{supply_id}", response_model=SupplySchema)
+def update_supply(supply_id: str, supply: SupplySchema, *, session: Session = Depends(get_session)) -> SupplySchema:
     db_supply = session.get(Supply, supply_id)
     supply_data = supply.model_dump(exclude_unset=True)
     db_supply.sqlmodel_update(supply_data)
     session.add(db_supply)
     session.commit()
     session.refresh(db_supply)
-    return db_supply
+    return SupplySchema.model_validate(db_supply)
 
 
-@app.patch("/api/v1/machines/{machine_id}", response_model=Machine)
-def update_machine(machine_id: str, machine: MachineCreate, *, session: Session = Depends(get_session)) -> Machine:
+@app.patch("/api/v1/machines/{machine_id}", response_model=MachineSchema)
+def update_machine(machine_id: str, machine: CreateMachineSchema, *, session: Session = Depends(get_session)) -> MachineSchema:
     db_machine = session.get(Machine, machine_id)
     machine_data = machine.model_dump(exclude_unset=True)
     db_machine.sqlmodel_update(machine_data)
     session.add(db_machine)
     session.commit()
     session.refresh(db_machine)
-    return db_machine
+    return MachineSchema.model_validate(db_machine)
 
 
 @app.middleware("http")

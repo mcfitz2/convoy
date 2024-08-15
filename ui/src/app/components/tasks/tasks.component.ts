@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MachineDetailed, MachineDetailedModelResponseTransformer, Supply, TaskDefinition, TaskDefinitionCreate, TaskDetailed, assignSupplies, createTaskDefinition, getMachines, getSupplies } from 'src/client';
+import { MachineSchema, CreateTaskDefinitionSchema, TaskSchema, assignSupplies, createTaskDefinition, getMachines, getSupplies, deleteTaskDefinition, SupplySchema } from 'src/client';
 import { SelectedSupply } from '../../models/selected-supply.model';
 
 @Component({
@@ -8,10 +8,10 @@ import { SelectedSupply } from '../../models/selected-supply.model';
   styleUrl: './tasks.component.css'
 })
 export class TasksComponent {
-  public tasks: {machine: MachineDetailed, task: TaskDetailed}[] = [];
-  public machines: MachineDetailed[] = [];
-  public machinesById: Map<string, MachineDetailed> = new Map();
-  public taskDefinition: TaskDefinitionCreate = {
+  public tasks: {machine: MachineSchema, task: TaskSchema}[] = [];
+  public machines: MachineSchema[] = [];
+  public machinesById: Map<string, MachineSchema> = new Map();
+  public taskDefinition: CreateTaskDefinitionSchema = {
     description: 'Task', time_interval: 0, meter_interval: 0,
     machine_id: ''
   }
@@ -21,6 +21,7 @@ export class TasksComponent {
   public supplies: SelectedSupply[] = [];
   public selectedSupply: SelectedSupply;
   public selectedSupplies: SelectedSupply[];
+  private allSupplies: SupplySchema[] = [];
   constructor() {
     this.selectedMachineId = ''
   }
@@ -31,21 +32,18 @@ export class TasksComponent {
   public openCreate() {
     this.showCreate = true;
   }
-  public createTask() {
+  public async createTask() {
     this.taskDefinition.machine_id = this.selectedMachineId
-    createTaskDefinition({ machineId: this.selectedMachineId, requestBody: this.taskDefinition }).then((taskDef) => {
-      if (this.selectedSupplies && this.selectedSupplies.length > 0) {
-        return assignSupplies({ machineId: this.selectedMachineId, taskDefId: taskDef.id, requestBody: this.selectedSupplies.map((s) => s.toTaskSupply(taskDef.id)) }).then((supplies) => {
-          this.showCreate = false;
-          this.viewDueTasks();
-        })
-      } else {
-        this.showCreate = false;
-        return this.viewDueTasks();
+    const taskDef = await createTaskDefinition({ machineId: this.selectedMachineId, requestBody: this.taskDefinition })
+    if (this.selectedSupplies && this.selectedSupplies.length > 0) {
+      try {
+        await assignSupplies({ machineId: this.selectedMachineId, taskDefId: taskDef.id, requestBody: this.selectedSupplies.map((s) => s.toTaskSupply(taskDef.id)) })
+      } catch (error) {
+        await deleteTaskDefinition({taskId: taskDef.id})
       }
-    }).catch((err) => {
-      console.log(err);
-    })
+    }
+    this.showCreate = false;
+    this.viewDueTasks();
   }
   public closeCreate() {
     this.showCreate = false;
@@ -59,17 +57,21 @@ export class TasksComponent {
   public viewUpcomingTasks() {
     this.fetchData(true)
   }
-  private isDue(machine: MachineDetailed, task: TaskDetailed) {
+  private isDue(machine: MachineSchema, task: TaskSchema) {
     return task.completed == false && (task.due_meter_reading <= machine.current_meter_reading || new Date(task.due_date) <= new Date())
   }
-  public updateInitialMeter() {
-    this.taskDefinition.initial_due_meter = this.machinesById.get(this.selectedMachineId).current_meter_reading
+  // public updateInitialMeter() {
+  //   this.taskDefinition.initial_due_meter = this.machinesById.get(this.selectedMachineId).current_meter_reading
+  // }
+  public reloadSupplies(): void {
+    this.supplies = this.allSupplies.filter((s) => {
+      return s.machine_id == this.selectedMachineId || s.machine_id == null
+    }).map((s) => new SelectedSupply(s));
   }
-
   public fetchData(includeNotDue: boolean = false, includeCompleted: boolean = false) {
-    getMachines().then((machines: MachineDetailed[]) => {
+    getMachines().then((machines: MachineSchema[]) => {
       this.loading = false;
-      const t: { machine: MachineDetailed, task: TaskDetailed }[] = [];
+      const t: { machine: MachineSchema, task: TaskSchema }[] = [];
       this.machines = machines;
       machines.forEach((machine) => {
         this.machinesById.set(machine.id, machine);
@@ -103,7 +105,7 @@ export class TasksComponent {
         return 0;
       });
     }).then(getSupplies).then((supplies) => {
-      this.supplies = supplies.map((s) => new SelectedSupply(s));
+      this.allSupplies = supplies;
     });
   }
 }

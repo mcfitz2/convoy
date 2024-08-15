@@ -15,6 +15,172 @@ export const $APIResponse = {
     title: 'APIResponse'
 } as const;
 
+export const $AssignedTaskSupplySchema = {
+    properties: {
+        quantity: {
+            type: 'number',
+            title: 'Quantity',
+            default: 0
+        },
+        supply_id: {
+            type: 'string',
+            title: 'Supply Id'
+        }
+    },
+    type: 'object',
+    required: ['supply_id'],
+    title: 'AssignedTaskSupplySchema'
+} as const;
+
+export const $CompleteTaskSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            title: 'Id'
+        },
+        completed: {
+            type: 'boolean',
+            title: 'Completed',
+            default: true
+        },
+        completed_date: {
+            type: 'string',
+            format: 'date',
+            title: 'Completed Date'
+        },
+        completed_meter_reading: {
+            type: 'number',
+            title: 'Completed Meter Reading'
+        },
+        notes: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Notes'
+        }
+    },
+    type: 'object',
+    required: ['id', 'completed_date', 'completed_meter_reading'],
+    title: 'CompleteTaskSchema'
+} as const;
+
+export const $CreateMachineSchema = {
+    properties: {
+        make: {
+            type: 'string',
+            title: 'Make'
+        },
+        model: {
+            type: 'string',
+            title: 'Model'
+        },
+        year: {
+            type: 'integer',
+            title: 'Year'
+        },
+        image: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Image'
+        },
+        meter_unit: {
+            type: 'string',
+            title: 'Meter Unit'
+        }
+    },
+    type: 'object',
+    required: ['make', 'model', 'year', 'meter_unit'],
+    title: 'CreateMachineSchema'
+} as const;
+
+export const $CreateTaskDefinitionSchema = {
+    properties: {
+        description: {
+            type: 'string',
+            title: 'Description'
+        },
+        time_interval: {
+            type: 'integer',
+            title: 'Time Interval'
+        },
+        meter_interval: {
+            type: 'number',
+            title: 'Meter Interval'
+        },
+        recurring: {
+            anyOf: [
+                {
+                    type: 'boolean'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Recurring',
+            default: false
+        },
+        notes: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Notes'
+        },
+        machine_id: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Machine Id'
+        },
+        initial_due_meter: {
+            anyOf: [
+                {
+                    type: 'number'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Initial Due Meter'
+        },
+        initial_due_date: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Initial Due Date'
+        }
+    },
+    type: 'object',
+    required: ['description', 'time_interval', 'meter_interval', 'machine_id'],
+    title: 'CreateTaskDefinitionSchema'
+} as const;
+
 export const $HTTPValidationError = {
     properties: {
         detail: {
@@ -73,42 +239,7 @@ export const $Machine = {
     title: 'Machine'
 } as const;
 
-export const $MachineCreate = {
-    properties: {
-        make: {
-            type: 'string',
-            title: 'Make'
-        },
-        model: {
-            type: 'string',
-            title: 'Model'
-        },
-        year: {
-            type: 'integer',
-            title: 'Year'
-        },
-        image: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Image'
-        },
-        meter_unit: {
-            type: 'string',
-            title: 'Meter Unit'
-        }
-    },
-    type: 'object',
-    required: ['make', 'model', 'year', 'meter_unit'],
-    title: 'MachineCreate'
-} as const;
-
-export const $MachineDetailed = {
+export const $MachineSchema = {
     properties: {
         id: {
             type: 'string',
@@ -157,7 +288,7 @@ export const $MachineDetailed = {
         },
         tasks: {
             items: {
-                '$ref': '#/components/schemas/TaskDetailed'
+                '$ref': '#/components/schemas/TaskSchema'
             },
             type: 'array',
             title: 'Tasks'
@@ -182,7 +313,7 @@ export const $MachineDetailed = {
     },
     type: 'object',
     required: ['id', 'make', 'model', 'year', 'meter_unit', 'meter_readings', 'task_definitions', 'tasks', 'current_meter_reading', 'name'],
-    title: 'MachineDetailed'
+    title: 'MachineSchema'
 } as const;
 
 export const $MeterReading = {
@@ -215,6 +346,42 @@ export const $MeterReading = {
     type: 'object',
     required: ['value'],
     title: 'MeterReading'
+} as const;
+
+export const $MeterReadingSchema = {
+    properties: {
+        id: {
+            type: 'string',
+            title: 'Id',
+            primary_key: true
+        },
+        value: {
+            type: 'number',
+            title: 'Value'
+        },
+        timestamp: {
+            type: 'string',
+            format: 'date-time',
+            title: 'Timestamp'
+        },
+        machine_id: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Machine Id'
+        },
+        machine: {
+            '$ref': '#/components/schemas/Machine'
+        }
+    },
+    type: 'object',
+    required: ['value', 'machine_id', 'machine'],
+    title: 'MeterReadingSchema'
 } as const;
 
 export const $Part = {
@@ -290,11 +457,12 @@ export const $Supply = {
     title: 'Supply'
 } as const;
 
-export const $SupplyDetailed = {
+export const $SupplySchema = {
     properties: {
         id: {
             type: 'string',
-            title: 'Id'
+            title: 'Id',
+            primary_key: true
         },
         name: {
             type: 'string',
@@ -331,126 +499,7 @@ export const $SupplyDetailed = {
     },
     type: 'object',
     required: ['name', 'unit', 'machine_id'],
-    title: 'SupplyDetailed'
-} as const;
-
-export const $Task = {
-    properties: {
-        id: {
-            type: 'string',
-            title: 'Id'
-        },
-        completed: {
-            type: 'boolean',
-            title: 'Completed',
-            default: false
-        },
-        completed_date: {
-            anyOf: [
-                {
-                    type: 'string',
-                    format: 'date'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Completed Date'
-        },
-        completed_meter_reading: {
-            anyOf: [
-                {
-                    type: 'number'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Completed Meter Reading'
-        },
-        due_date: {
-            type: 'string',
-            format: 'date',
-            title: 'Due Date'
-        },
-        due_meter_reading: {
-            type: 'number',
-            title: 'Due Meter Reading'
-        },
-        notes: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Notes'
-        },
-        task_definition_id: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Task Definition Id'
-        },
-        machine_id: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Machine Id'
-        }
-    },
-    type: 'object',
-    required: ['due_date'],
-    title: 'Task'
-} as const;
-
-export const $TaskComplete = {
-    properties: {
-        id: {
-            type: 'string',
-            title: 'Id'
-        },
-        completed: {
-            type: 'boolean',
-            title: 'Completed',
-            default: true
-        },
-        completed_date: {
-            type: 'string',
-            format: 'date',
-            title: 'Completed Date'
-        },
-        completed_meter_reading: {
-            type: 'number',
-            title: 'Completed Meter Reading'
-        },
-        notes: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Notes'
-        }
-    },
-    type: 'object',
-    required: ['id', 'completed_date', 'completed_meter_reading'],
-    title: 'TaskComplete'
+    title: 'SupplySchema'
 } as const;
 
 export const $TaskDefinition = {
@@ -511,84 +560,7 @@ export const $TaskDefinition = {
     title: 'TaskDefinition'
 } as const;
 
-export const $TaskDefinitionCreate = {
-    properties: {
-        description: {
-            type: 'string',
-            title: 'Description'
-        },
-        time_interval: {
-            type: 'integer',
-            title: 'Time Interval'
-        },
-        meter_interval: {
-            type: 'number',
-            title: 'Meter Interval'
-        },
-        recurring: {
-            anyOf: [
-                {
-                    type: 'boolean'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Recurring',
-            default: false
-        },
-        notes: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Notes'
-        },
-        machine_id: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Machine Id'
-        },
-        initial_due_meter: {
-            anyOf: [
-                {
-                    type: 'number'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Initial Due Meter'
-        },
-        initial_due_date: {
-            anyOf: [
-                {
-                    type: 'string',
-                    format: 'date'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Initial Due Date'
-        }
-    },
-    type: 'object',
-    required: ['description', 'time_interval', 'meter_interval', 'machine_id'],
-    title: 'TaskDefinitionCreate'
-} as const;
-
-export const $TaskDefinitionDetailed = {
+export const $TaskDefinitionSchema = {
     properties: {
         id: {
             type: 'string',
@@ -642,7 +614,7 @@ export const $TaskDefinitionDetailed = {
         },
         supplies: {
             items: {
-                '$ref': '#/components/schemas/TaskSupplyDetailed'
+                '$ref': '#/components/schemas/TaskSupplySchema'
             },
             type: 'array',
             title: 'Supplies'
@@ -650,14 +622,15 @@ export const $TaskDefinitionDetailed = {
     },
     type: 'object',
     required: ['id', 'description', 'time_interval', 'meter_interval', 'machine_id', 'supplies'],
-    title: 'TaskDefinitionDetailed'
+    title: 'TaskDefinitionSchema'
 } as const;
 
-export const $TaskDetailed = {
+export const $TaskSchema = {
     properties: {
         id: {
             type: 'string',
-            title: 'Id'
+            title: 'Id',
+            primary_key: true
         },
         completed: {
             type: 'boolean',
@@ -721,7 +694,7 @@ export const $TaskDetailed = {
         task_definition: {
             anyOf: [
                 {
-                    '$ref': '#/components/schemas/TaskDefinitionDetailed'
+                    '$ref': '#/components/schemas/TaskDefinitionSchema'
                 },
                 {
                     type: 'null'
@@ -760,65 +733,27 @@ export const $TaskDetailed = {
     },
     type: 'object',
     required: ['due_date', 'task_definition_id', 'task_definition', 'machine_id', 'machine', 'due_meter_ago', 'due_days_ago', 'overdue_reason'],
-    title: 'TaskDetailed'
+    title: 'TaskSchema'
 } as const;
 
-export const $TaskSupply = {
+export const $TaskSupplySchema = {
     properties: {
-        id: {
-            type: 'string',
-            title: 'Id'
-        },
         quantity: {
             type: 'number',
             title: 'Quantity',
             default: 0
-        },
-        task_definition_id: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Task Definition Id'
         },
         supply_id: {
-            anyOf: [
-                {
-                    type: 'string'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Supply Id'
-        }
-    },
-    type: 'object',
-    title: 'TaskSupply'
-} as const;
-
-export const $TaskSupplyDetailed = {
-    properties: {
-        id: {
             type: 'string',
-            title: 'Id'
-        },
-        quantity: {
-            type: 'number',
-            title: 'Quantity',
-            default: 0
+            title: 'Supply Id'
         },
         supply: {
-            '$ref': '#/components/schemas/SupplyDetailed'
+            '$ref': '#/components/schemas/Supply'
         }
     },
     type: 'object',
-    required: ['id', 'supply'],
-    title: 'TaskSupplyDetailed'
+    required: ['supply_id', 'supply'],
+    title: 'TaskSupplySchema'
 } as const;
 
 export const $ValidationError = {
