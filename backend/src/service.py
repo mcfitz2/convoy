@@ -130,21 +130,11 @@ class ConvoyService:
 
         return task
 
-    async def set_todoist_task_id(self, machine_id: str, task_id: str, todoist_task_id: str) -> Task:
+    async def set_todoist_task_id(self, machine_id: str, task_id: str, todoist_task_id: str):
         logger.info(f"Setting todoist_task_id={todoist_task_id} on task {task_id}")
-        machine = await self.get_machine(machine_id)
-        try:
-            index = [y.id for y in machine.tasks].index(task_id)
-        except ValueError:
-            try:
-                index = [y.id for y in machine.tasks].index(ObjectId(task_id))
-            except ValueError:
-                raise Exception(f"Can't find task in list {task_id} {machine.tasks}")
-
-        machine.tasks[index].todoist_task_id = todoist_task_id
-        await self.engine.save(machine)
-        return machine.tasks[index]
-
+        async with self.async_session() as session:
+            await session.execute(update(Task).where(Task.id == task_id).values({"todoist_task_id": todoist_task_id}))
+            await session.commit()
     async def delete_task(self, machine_id: str, task_id: str) -> Task:
         async with self.async_session() as session:
             task = (await session.execute(select(Task).where(Task.id == task_id))).unique().scalars().first()
