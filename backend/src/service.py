@@ -100,7 +100,6 @@ class ConvoyService:
             await self.reconcile_task(machine, task)
             return task
 
-
     async def complete_task(self, machine_id: str, task_id: str, completed_date: datetime.date, completed_meter_reading: float, notes: str) -> Task:
         machine = await self.get_machine(machine_id)
         task = await self.get_task(machine_id, task_id)

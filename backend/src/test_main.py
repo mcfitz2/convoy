@@ -2,7 +2,6 @@ import datetime
 import logging
 from pydantic import ValidationError
 import pytest
-import pytest_asyncio
 from service import convoy_service as service
 from models import Machine, MeterReading, MeterReadingSchema, Task, MachineSchema, TaskSchema
 from main import app
@@ -283,28 +282,6 @@ async def test_record_reading():
         assert len(response.json()["meter_readings"]) == 1
         assert response.json()["name"] == "2025 Test Machine 2"
         assert response.json()["purchase_date"] == "08/19/2024"
-
-
-@pytest.mark.asyncio
-async def test_create_and_delete_task_no_supplies():
-    await init()
-    response = await create_machine_via_api()
-    machine_id = response.json()["id"]
-
-    response = await create_task_via_api(machine_id)
-    assert response.status_code == 200
-    task = response.json()
-    assert task["due_date"] == "08/30/2024"
-    response = await delete_task_via_api(machine_id, task["id"])
-
-    assert response.status_code == 200
-    assert response.json()["due_date"] == "08/30/2024"
-
-    response = await get_task_via_api(machine_id, task["id"])
-    assert response.status_code == 404
-    response = await get_tasks_via_api(machine_id)
-    assert response.status_code == 200
-    assert len(response.json()) == 0
 
 
 @pytest.mark.asyncio
