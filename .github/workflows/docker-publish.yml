@@ -48,12 +48,15 @@ jobs:
         run: |
           pip install pytest pytest-cov
           cd backend
-          pytest --cov=com --cov-report=xml --cov-report=html --cov-report json
-      - name: Update Coverage Badge
-        # GitHub actions: default branch variable
-        # https://stackoverflow.com/questions/64781462/github-actions-default-branch-variable
-        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
-        uses: we-cli/coverage-badge-action@main
+          pytest tests/ --cov=.  --cov-report xml:coverage.xml      
+      - name: ls
+        run: |
+          ls -a 
+          find .
+      - name: Coveralls GitHub Action
+        uses: coverallsapp/github-action@v2.3.0
+        with:
+          file: backend/coverage.xml
   build:
     runs-on: ubuntu-latest
     permissions:
