@@ -2,7 +2,6 @@ import datetime
 import os
 from typing import List, Tuple
 
-from bson import ObjectId
 import requests
 from sqlalchemy import select, update
 from exceptions import MachineNotFound, TaskNotFound
@@ -135,6 +134,7 @@ class ConvoyService:
         async with self.async_session() as session:
             await session.execute(update(Task).where(Task.id == task_id).values({"todoist_task_id": todoist_task_id}))
             await session.commit()
+
     async def delete_task(self, machine_id: str, task_id: str) -> Task:
         async with self.async_session() as session:
             task = (await session.execute(select(Task).where(Task.id == task_id))).unique().scalars().first()
@@ -157,8 +157,9 @@ class ConvoyService:
             return tasks
 
     async def get_supply(self, supply_id) -> Supply:
-        result = await self.engine.find_one(Supply, {"_id": ObjectId(supply_id)})
-        return result
+        async with self.async_session() as session:
+            supply = (await session.execute(select(Supply).where(Supply.id == supply_id))).unique().scalars().first()
+            return supply
 
     async def get_supplies(self) -> List[Supply]:
         result = await self.engine.find(Supply, {})
