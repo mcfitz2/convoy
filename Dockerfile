@@ -19,7 +19,7 @@ COPY backend/requirements.txt .
 
 RUN pip3 install -r requirements.txt
 
-COPY backend/main.py main.py
+COPY backend/* ./
 CMD ["fastapi", "run", "main.py", "--port", "80"]
 
 EXPOSE 80
