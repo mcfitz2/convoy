@@ -33,4 +33,4 @@ dependencies = [
 [tool.poe.tasks]
 test = "pytest tests/api.py tests/app.py tests/schemas.py"  
 test_all = "pytest tests/*"  
-test_pipeline = "pytest tests/* --cov-report xml:coverage.xml"  
+test_pipeline = "pytest tests/* --cov-. --cov-report xml:coverage.xml"  
