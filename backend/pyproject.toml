@@ -1,2 +1,35 @@
 [tool.black]
 line-length = 150
+
+[tool.coverage.run]
+concurrency = ["gevent"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[project]
+name = "convoy"
+version = "0.0.1"
+requires-python = ">= 3.11.7"
+dependencies = [
+    "fastapi[standard]",
+    "sqlalchemy[asyncio]",
+    "validators",
+    "aiosqlite",
+    "httpx",
+    "pydantic",
+    "pytest",
+    "python_dateutil",
+    "Requests",
+    "todoist_api_python",
+    "urllib3",
+    "validators",
+    "pytest-asyncio",
+    "gevent",
+    "poethepoet>=0.27.0",
+]
+
+[tool.poe.tasks]
+test = "pytest tests/api.py tests/app.py tests/schemas.py"  
+test_all = "pytest tests/*"  
+test_pipeline = "pytest tests/* --cov=.  --cov-report xml:coverage.xml"  

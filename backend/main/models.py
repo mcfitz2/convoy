@@ -61,6 +61,11 @@ class Supply(Base):
     task_supplies: Mapped[List["TaskSupply"]] = relationship(back_populates="supply", lazy="joined", cascade="all, delete-orphan")
     __table_args__ = (CheckConstraint("quantity_on_hand >= 0", name="check_quantity_positive"), {})
 
+    @classmethod
+    def from_schema(cls, schema: "SupplySchema") -> "Supply":
+        d = schema.model_dump()
+        return Supply(**d)
+
 
 class TaskSupply(Base):
     __tablename__ = "task_supply"
@@ -83,15 +88,15 @@ class Task(Base):
     description: Mapped[str]
     time_interval: Mapped[int]  # days
     meter_interval: Mapped[float]
-    recurring: Mapped[bool] = False
+    recurring: Mapped[bool] = mapped_column(default=False)
     notes: Mapped[Optional[str]] = mapped_column(String())
     task_supplies: Mapped[List["TaskSupply"]] = relationship(back_populates="task", lazy="joined", cascade="all, delete-orphan")
-    completed: Mapped[bool] = False
+    completed: Mapped[bool] = mapped_column(default=False)
     completed_date: Mapped[Optional[datetime.date]] = None
     completed_meter_reading: Mapped[Optional[float]] = None
     due_date: Mapped[datetime.date]
     due_meter_reading: Mapped[float]
-    todoist_task_id: Mapped[Optional[str]] = None
+    todoist_task_id: Mapped[Optional[str]] = mapped_column(default=None)
     machine_id: Mapped[str] = mapped_column(ForeignKey("machine.id"))
     machine: Mapped["Machine"] = relationship(
         back_populates="tasks",
@@ -148,8 +153,8 @@ class PartSchema(BaseModel):
     id: str = Field(default_factory=uuid_gen)
     name: str = Field()
     link: Optional[str] = Field()
-    supply_id: str = Field()
-    supply: "SupplySchema"
+    supply_id: Optional[str] = None
+    supply: Optional["SupplySchema"] = None
 
 
 class SupplySchema(BaseModel):
@@ -159,9 +164,19 @@ class SupplySchema(BaseModel):
     name: str = Field()
     unit: str = Field()
     quantity_on_hand: float = Field()
-    parts: List[PartSchema]
-    machine_id: Optional[str] = Field()
-    task_supplies: List["TaskSupplySchema"]
+    parts: List[PartSchema] = []
+    machine_id: Optional[str] = None
+    task_supplies: List["TaskSupplySchema"] = Field(default=[])
+
+
+class SupplyUpdateSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    name: Optional[str] = Field(default=None)
+    unit: Optional[str] = Field(default=None)
+    quantity_on_hand: Optional[float] = Field()
+    parts: Optional[List[PartSchema]] = Field(default=[])
+    machine_id: Optional[str] = Field(default=None)
+    task_supplies: List["TaskSupplySchema"] = Field(default=[])
 
 
 class TaskSupplySchema(BaseModel):
@@ -183,16 +198,16 @@ class TaskSchema(BaseModel):
     description: str
     time_interval: int  # days
     meter_interval: float
-    recurring: bool = False
+    recurring: bool = Field(default=False)
     notes: Optional[str] = Field()
-    completed: bool = False
-    completed_date: Optional[datetime.date] = None
-    completed_meter_reading: Optional[float] = None
+    completed: bool = Field(default=False)
+    completed_date: Optional[datetime.date] = Field(default=None)
+    completed_meter_reading: Optional[float] = Field(default=None)
     due_date: datetime.date
     due_meter_reading: float
     normalize_date = field_validator("completed_date", mode="before")(parse_date)
     normalize_date2 = field_validator("due_date", mode="before")(parse_date)
-    todoist_task_id: Optional[str] = None
+    todoist_task_id: Optional[str] = Field(default=None)
     machine_id: str = Field()
     task_supplies: List["TaskSupplySchema"] = []
 
@@ -229,8 +244,6 @@ class TaskCompleteSchema(BaseModel):
     def serialize_dt2(self, dt: datetime.date, _info):
         if dt:
             return dt.strftime("%m/%d/%Y")
-        else:
-            return None
 
 
 class TaskCreateSchema(BaseModel):
@@ -240,7 +253,7 @@ class TaskCreateSchema(BaseModel):
     description: str
     time_interval: int  # days
     meter_interval: float
-    recurring: bool = False
+    recurring: bool
     notes: Optional[str] = None
     due_date: Optional[datetime.date]
     due_meter_reading: Optional[float]

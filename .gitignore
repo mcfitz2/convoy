@@ -61,3 +61,4 @@ backend/convoy.db
 backend/main/__pycache__/*
 backend/convoy.db
 backend/tests/__pycache__/*
+backend/convoy.egg-info/

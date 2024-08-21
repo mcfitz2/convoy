@@ -4,7 +4,20 @@ from .utils import setup_logger
 from .dependencies import get_service
 from .service import ConvoyService
 
-from .models import Machine, MachineSchema, MachineUpdateSchema, MeterReading, MeterReadingSchema, SupplySchema, Task, TaskCompleteSchema, TaskCreateSchema, TaskSchema
+from .models import (
+    Machine,
+    MachineSchema,
+    MachineUpdateSchema,
+    MeterReading,
+    MeterReadingSchema,
+    Supply,
+    SupplySchema,
+    SupplyUpdateSchema,
+    Task,
+    TaskCompleteSchema,
+    TaskCreateSchema,
+    TaskSchema,
+)
 from fastapi import Depends
 
 from fastapi import APIRouter
@@ -72,35 +85,40 @@ async def create_task(
     created: Task = await service.create_task(machine_id, Task.from_schema(task))
     return TaskSchema.model_validate(created)
 
-
 @router.post("/api/v1/machines/{machine_id}/tasks/{task_id}/complete", response_model=TaskSchema)
 async def complete_task(task: TaskCompleteSchema, machine_id: str, task_id: str, service: ConvoyService = Depends(get_service)) -> TaskSchema:
-    updated = await service.complete_task(machine_id, task_id, completed_date=task.completed_date, completed_meter_reading=task.completed_meter_reading, notes=task.notes)
+    updated = await service.complete_task(
+        machine_id, task_id, completed_date=task.completed_date, completed_meter_reading=task.completed_meter_reading, notes=task.notes
+    )
     return updated
 
 
 @router.patch("/api/v1/supplies/{supply_id}", response_model=SupplySchema)
 async def update_supply(
     supply_id: str,
-    supply: SupplySchema,
+    supply: SupplyUpdateSchema,
     service: ConvoyService = Depends(get_service),
 ) -> SupplySchema:
-    updated = await service.update_supply(supply_id, supply)
-    return updated
+    updated = await service.update_supply(supply_id, supply.model_dump(exclude_none=True, exclude_unset=True))
+    return SupplySchema.model_validate(updated)
 
 
 @router.get("/api/v1/supplies", response_model=List[SupplySchema])
 async def get_supplies(service: ConvoyService = Depends(get_service)) -> List[SupplySchema]:
-    return await service.get_supplies()
+    return [SupplySchema.model_validate(s) for s in await service.get_supplies()]
 
 
 @router.post("/api/v1/supplies", response_model=SupplySchema)
 async def create_supply(supply: SupplySchema, service: ConvoyService = Depends(get_service)) -> SupplySchema:
-    created = await service.create_supply(supply)
-    return created
+    return SupplySchema.model_validate(await service.create_supply(Supply.from_schema(supply)))
 
 
 @router.delete("/api/v1/supplies/{supply_id}", response_model=SupplySchema)
 async def delete_supply(supply_id, service: ConvoyService = Depends(get_service)) -> SupplySchema:
     deleted = await service.delete_supply(supply_id)
     return deleted
+
+
+@router.get("/api/v1/supplies/{supply_id}", response_model=SupplySchema)
+async def get_supply(supply_id, service: ConvoyService = Depends(get_service)) -> SupplySchema:
+    return SupplySchema.model_validate(await service.get_supply(supply_id))

@@ -4,7 +4,7 @@ from typing import List, Tuple
 
 import requests
 from sqlalchemy import select, update
-from .exceptions import MachineNotFound, TaskNotFound
+from .exceptions import MachineNotFound, SupplyNotFound, TaskNotFound
 from .utils import LogRetry, setup_logger
 from .models import Base, Machine, MeterReading, Supply, Task
 from todoist_api_python.api_async import TodoistAPIAsync
@@ -17,7 +17,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 logger = setup_logger("ConvoyService")
-enable_todoist = False
+enable_todoist = True
 
 
 class ConvoyService:
@@ -44,26 +44,24 @@ class ConvoyService:
                 session.add(task)
             await session.commit()
             await session.refresh(machine)
-            return machine
+        return machine
 
     async def get_machine(self, machine_id) -> Machine:
         async with self.async_session() as session:
             machine = (await session.execute(select(Machine).where(Machine.id == machine_id))).unique().scalars().first()
-            if not machine:
-                raise MachineNotFound(machine_id)
-            else:
-                return machine
+        if not machine:
+            raise MachineNotFound(machine_id)
+        else:
+            return machine
 
     async def update_machine(self, machine_id: str, new_machine: dict) -> Machine:
         machine = await self.get_machine(machine_id)
-        if not machine:
-            raise MachineNotFound(machine_id)
         async with self.async_session() as session:
             await session.execute(update(Machine).where(Machine.id == machine_id).values(**new_machine))
             session.add(machine)
             await session.commit()
             await session.refresh(machine)
-            return machine
+        return machine
 
     async def delete_machine(self, machine_id: str) -> Machine:
         async with self.async_session() as session:
@@ -71,7 +69,7 @@ class ConvoyService:
             await session.delete(machine)
             await session.commit()
             await self.reconcile_tasks(machine)
-            return machine
+        return machine
 
     async def get_machines(self) -> List[Machine]:
         async with self.async_session() as session:
@@ -84,7 +82,7 @@ class ConvoyService:
             await session.commit()
             await session.refresh(reading)
             await self.reconcile_tasks(machine)
-            return reading
+        return reading
 
     async def create_task(self, machine_id: str, task: Task) -> Task:
         machine = await self.get_machine(machine_id)
@@ -96,7 +94,8 @@ class ConvoyService:
             session.add(task)
             await session.commit()
             await session.refresh(task)
-            await self.reconcile_task(machine, task)
+
+            task, td_task = await self.reconcile_task(machine, task)
             return task
 
     async def complete_task(self, machine_id: str, task_id: str, completed_date: datetime.date, completed_meter_reading: float, notes: str) -> Task:
@@ -109,8 +108,13 @@ class ConvoyService:
             task.notes = notes
         async with self.async_session() as session:
             session.add(task)
+            await session.commit()
             if task.recurring:
+                logger.warning(f"Completed task [{task_id}] was recurring task. Creating new task")
                 new_task = Task(
+                    description=task.description,
+                    time_interval=task.time_interval,
+                    meter_interval=task.meter_interval,
                     due_date=task.completed_date + datetime.timedelta(days=task.time_interval),
                     due_meter_reading=task.completed_meter_reading + task.meter_interval,
                     completed=False,
@@ -122,11 +126,10 @@ class ConvoyService:
                     task_supplies=task.task_supplies,
                 )
                 session.add(new_task)
+                await session.commit()
                 await self.reconcile_task(machine.id, new_task)
 
-        await session.commit()
-        await self.reconcile_task(machine.id, task)
-
+            await self.reconcile_task(machine.id, task)
         return task
 
     async def set_todoist_task_id(self, machine_id: str, task_id: str, todoist_task_id: str):
@@ -134,50 +137,67 @@ class ConvoyService:
         async with self.async_session() as session:
             await session.execute(update(Task).where(Task.id == task_id).values({"todoist_task_id": todoist_task_id}))
             await session.commit()
+        task = await self.get_task(machine_id, task_id)
+        return task
 
     async def delete_task(self, machine_id: str, task_id: str) -> Task:
+        task = await self.get_task(machine_id, task_id)
         async with self.async_session() as session:
-            task = (await session.execute(select(Task).where(Task.id == task_id))).unique().scalars().first()
             await session.delete(task)
             await session.commit()
-            await self.reconcile_task(machine_id, task)
-            return task
+        task, td_task = await self.reconcile_task(machine_id, task, deleted=True)
+        return task
 
     async def get_task(self, machine_id: str, task_id: str) -> Task:
         async with self.async_session() as session:
             task = (await session.execute(select(Task).where(Task.id == task_id))).unique().scalars().first()
-            if not task:
-                raise TaskNotFound(machine_id, task_id)
-            return task
+        if not task:
+            raise TaskNotFound(machine_id, task_id)
+        return task
 
     async def get_tasks(self, machine_id: str) -> List[Task]:
         await self.get_machine(machine_id)
         async with self.async_session() as session:
             tasks = (await session.execute(select(Task).where(Task.machine_id == machine_id))).unique().scalars().all()
-            return tasks
+        return tasks
 
     async def get_supply(self, supply_id) -> Supply:
         async with self.async_session() as session:
             supply = (await session.execute(select(Supply).where(Supply.id == supply_id))).unique().scalars().first()
-            return supply
+        if not supply:
+            raise SupplyNotFound(supply_id)
+        return supply
 
     async def get_supplies(self) -> List[Supply]:
-        result = await self.engine.find(Supply, {})
-        return result
+        async with self.async_session() as session:
+            supplies = (await session.execute(select(Supply))).unique().scalars().all()
+        return supplies
 
-    async def create_supply(self, supply) -> Supply:
-        created = await self.engine.save(supply)
-        return created
+    async def create_supply(self, supply: Supply) -> Supply:
+        async with self.async_session() as session:
+            session.add(supply)
+            await session.commit()
+            await session.refresh(supply)
+        return supply
 
     async def update_supply(self, supply_id, new_supply) -> Supply:
         supply = await self.get_supply(supply_id)
-        supply.model_update(new_supply, exclude=["id", "_id"])
-        updated = await self.engine.save(supply)
-        return updated
+        if not supply:
+            raise SupplyNotFound(supply_id)
+        async with self.async_session() as session:
+            await session.execute(update(Supply).where(Supply.id == supply_id).values(**new_supply))
+            session.add(supply)
+            await session.commit()
+            await session.refresh(supply)
+            return supply
 
     async def delete_supply(self, supply_id) -> Supply:
-        supply = await self.get_supply(supply_id)
-        await self.engine.delete(supply)
+        async with self.async_session() as session:
+            supply = (await session.execute(select(Supply).where(Supply.id == supply_id))).unique().scalars().first()
+            if not supply:
+                raise SupplyNotFound(supply_id)
+            await session.delete(supply)
+            await session.commit()
         return supply
 
     async def create_td_task(self, task: Task) -> TDTask:
@@ -202,12 +222,12 @@ class ConvoyService:
     async def reconcile_tasks(self, machine: Machine) -> List[Tuple[TDTask | None, bool]]:
         return [await self.reconcile_task(machine.id, task) for task in machine.tasks]
 
-    async def reconcile_task(self, machine_id: str, task: Task, deleted=False) -> Tuple[TDTask | None, bool]:
+    async def reconcile_task(self, machine_id: str, task: Task, deleted=False) -> Tuple[Task, TDTask]:
         if enable_todoist:
             if deleted and task.todoist_task_id:
                 logger.info(f"Convoy task[{task.id}] has been deleted. Deleting Todoist task[{task.todoist_task_id}]")
-                await self.todoist.delete_task(task.todoist_task_id)
-                return
+                td_task = await self.todoist.delete_task(task.todoist_task_id)
+                return (task, td_task)
             if not deleted and task.todoist_task_id:
                 try:
                     td_task: TDTask = await self.todoist.get_task(task.todoist_task_id)
@@ -215,7 +235,7 @@ class ConvoyService:
                     assert task.due_date.strftime("%Y-%m-%d") == td_task.due.date
                     assert task.completed == td_task.is_completed
                     logger.info(f"Convoy task[{task.id}] matches Todoist task[{task.todoist_task_id}]. Doing nothing.")
-                    return
+                    return (task, td_task)
                 except AssertionError:
                     logger.info(f"Convoy task[{task.id}] does not match Todoist task[{task.todoist_task_id}]. Updating TD task.")
                     await self.todoist.update_task(
@@ -231,23 +251,24 @@ class ConvoyService:
                             f"Convoy task[{task.id}] has been marked completed, but Todoist task[{task.todoist_task_id}] is still open. Closing TD task."
                         )
                         await self.todoist.close_task(task.todoist_task_id)
-                    return
+                    td_task = await self.todoist.get_task(task.todoist_task_id)
+                    return (task, td_task)
                 except requests.exceptions.HTTPError as e:
                     if e.response.status_code == 404:
                         logger.info(f"Todoist task[{task.todoist_task_id}] for Convoy task[{task.id}] has been deleted. Recreating.")
                         td_task = await self.create_td_task(task)
-                        await self.set_todoist_task_id(machine_id, task.id, td_task.id)
-                        return
+                        task = await self.set_todoist_task_id(machine_id, task.id, td_task.id)
+                        return (task, td_task)
                     else:
                         logger.info(f"Failed to reconcile Convoy task[{task.id}]", exc_info=e)
-                        return
+                        return (None, None)
 
             if not task.todoist_task_id:
                 logger.info(f"Todoist task for Convoy task[{task.id}] does not exist. Creating.")
                 td_task = await self.create_td_task(task)
                 if td_task:
-                    await self.set_todoist_task_id(machine_id, task.id, td_task.id)
-                return
+                    task = await self.set_todoist_task_id(machine_id, task.id, td_task.id)
+                return (task, td_task)
 
 
 convoy_service = ConvoyService()
