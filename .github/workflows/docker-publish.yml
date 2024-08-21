@@ -21,18 +21,12 @@ env:
 
 jobs:
   lint:
-    defaults:
-      run:
-        working-directory: backend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: chartboost/ruff-action@v1
 
   test:
-    defaults:
-      run:
-        working-directory: backend
     runs-on: ubuntu-latest
     steps:
       - name: Set up Python
