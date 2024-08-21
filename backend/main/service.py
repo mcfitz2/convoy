@@ -29,7 +29,7 @@ class ConvoyService:
     def __init__(self):
         self.engine = create_async_engine("sqlite+aiosqlite://")
         self.async_session = async_sessionmaker(self.engine, expire_on_commit=False)
-        self.token = os.environ.get("TODOIST_TOKEN", "6b679be327e54dd808c0bb79da8aa43962d008b8")
+        self.token = os.environ.get("TODOIST_TOKEN", "")
         self.project = os.environ.get("TODOIST_PROJECT_ID", "2338186081")
         s = RequestsSession()
         s.mount(BASE_URL, HTTPAdapter(max_retries=LogRetry(total=10, backoff_factor=1, status_forcelist=[500, 502, 503, 504])))
