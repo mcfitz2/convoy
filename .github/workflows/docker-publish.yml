@@ -28,7 +28,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: chartboost/ruff-action@v1
-        working-directory: backend
 
   test:
     defaults:
