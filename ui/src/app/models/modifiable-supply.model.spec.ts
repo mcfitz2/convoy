@@ -1,7 +1,7 @@
-import { ModifiableSupply } from './modifiable-supply.model';
+import { ModifiableSupplySchema } from './modifiable-supply.model';
 
-describe('ModifiableSupply', () => {
+describe('ModifiableSupplySchema', () => {
   it('should create an instance', () => {
-    expect(new ModifiableSupply()).toBeTruthy();
+    expect(new ModifiableSupplySchema()).toBeTruthy();
   });
 });

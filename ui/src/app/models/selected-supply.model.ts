@@ -1,4 +1,4 @@
-import { Supply, TaskSupply } from "src/client";
+import { SupplySchema } from "src/client";
 
 export class SelectedSupply {
     name: string;
@@ -6,8 +6,8 @@ export class SelectedSupply {
     quantity?: number;
     task_definition_id?: string | null;
     supply_id?: string | null;
-    supply: Supply;
-    constructor(supply: Supply) {
+    supply: SupplySchema;
+    constructor(supply: SupplySchema) {
         this.name = supply.name;
         this.unit = supply.unit;
         this.quantity = 0;

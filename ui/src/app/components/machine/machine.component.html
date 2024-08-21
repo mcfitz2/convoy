@@ -14,13 +14,11 @@
                         <clr-stack-view>
                             <clr-stack-block [clrStackViewLevel]="1">
                                 <clr-stack-label>Odometer</clr-stack-label>
-                                <clr-stack-content>{{(machine.current_meter_reading | number:'1.0':'en-US')|| 'Not
-                                    recorded'}} {{machine.meter_unit | unitPlural}}</clr-stack-content>
+                                <clr-stack-content>{{(machine.current_meter_reading | number:'1.0':'en-US')|| 'Not recorded'}} {{machine.meter_unit | unitPlural}}</clr-stack-content>
                             </clr-stack-block>
                             <clr-stack-block [clrStackViewLevel]="1">
                                 <clr-stack-label>Due Tasks</clr-stack-label>
-                                <clr-stack-content>{{machine.tasks |
-                                    dueTasks:machine.current_meter_reading}}</clr-stack-content>
+                                <clr-stack-content>{{machine.tasks | dueTasks:machine.current_meter_reading}}</clr-stack-content>
                             </clr-stack-block>
                             <clr-stack-block [clrStackViewLevel]="1">
                                 <clr-stack-label>Completed Tasks</clr-stack-label>
@@ -40,7 +38,7 @@
     </div>
 </div>
 <clr-side-panel [(clrSidePanelOpen)]="historyMode" [clrSidePanelSize]="'xl'" [clrSidePanelStaticBackdrop]="true">
-    <h3 class="side-panel-title">{{machine.name}}</h3>
+    <h3 class="side-panel-title">{{machine.model}}</h3>
     <div class="side-panel-body">
         <clr-datagrid>
             <clr-dg-column>Description</clr-dg-column>

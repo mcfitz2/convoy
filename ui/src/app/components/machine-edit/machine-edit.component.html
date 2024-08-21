@@ -1,5 +1,5 @@
 <clr-side-panel [(clrSidePanelOpen)]="open"   (clrSidePanelAlternateClose)="close.emit()"   [clrSidePanelPreventClose]="true">
-        <h3 class="side-panel-title">{{machine?.name || 'Add Machine'}}</h3>
+        <h3 class="side-panel-title">{{machine?.model || 'Add Machine'}}</h3>
         <div class="side-panel-body">
             <form [formGroup]="machineForm" clrForm>
 

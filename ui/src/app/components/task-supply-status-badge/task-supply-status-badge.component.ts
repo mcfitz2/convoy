@@ -1,23 +1,22 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Machine, Supply, Task, getSupplies } from 'src/client';
-import { UnitPluralPipe } from '../../pipes/unit-plural.pipe';
+import { SupplySchema, TaskSchema, getSupplies } from 'src/client';
 
 @Component({
   selector: 'app-task-supply-status-badge',
   templateUrl: './task-supply-status-badge.component.html',
   styleUrl: './task-supply-status-badge.component.css'
 })
-export class TaskSupplyStatusBadgeComponent implements OnInit {
-  @Input() task: Task
+export class TaskSchemaSupplySchemaStatusBadgeComponent implements OnInit {
+  @Input() task: TaskSchema
   public message: string = 'Not Implemented'
   public class: string = "label label-danger"
-  suppliesById: Map<string, Supply> = new Map();
+  suppliesById: Map<string, SupplySchema> = new Map();
   public async ngOnInit() {
       this.suppliesById = (await getSupplies()).reduce((byId, supply) => {
         byId.set(supply.id, supply);
         return byId;
       }, new Map())
-      const missing_supplies = this.task.supplies.some((ts) => {
+      const missing_supplies = this.task.task_supplies.some((ts) => {
         return this.suppliesById.get(ts.supply_id).quantity_on_hand < ts.quantity_required
       })
       if (missing_supplies) {

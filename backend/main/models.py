@@ -220,7 +220,7 @@ class TaskSchema(BaseModel):
     todoist_task_id: Optional[str] = Field(default=None)
     machine_id: str = Field()
     task_supplies: List["TaskSupplySchema"] = []
-
+    due_meter_ago: Optional[float] = Field(default=None)
     @field_serializer("due_date")
     def serialize_dt(self, dt: datetime.date, _info):
         if dt:
@@ -232,16 +232,7 @@ class TaskSchema(BaseModel):
             return dt.strftime("%m/%d/%Y")
         else:
             return None
-
-    # @computed_field
-    # @property
-    # def due_meter_ago(self) -> float:
-    #     return self.machine.current_meter_reading - self.due_meter_reading
-
-    @computed_field
-    @property
-    def due_days_ago(self) -> int:
-        return (datetime.date.today() - self.due_date).days or 0
+    due_days_ago: Optional[int] = Field(default=None)
 
 
 class TaskCompleteSchema(BaseModel):
@@ -258,7 +249,7 @@ class TaskCompleteSchema(BaseModel):
 
 class TaskCreateSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    supplies: List[str] = []
+    task_supplies: List[TaskSupplySchema] = Field(default=[])
     normalize_date = field_validator("due_date", mode="before")(parse_date)
     description: str
     time_interval: int  # days
@@ -284,24 +275,24 @@ class MachineSchema(BaseModel):
     tasks: Optional[List["TaskSchema"]] = []
 
     normalize_date = field_validator("purchase_date", mode="before")(parse_date)
-
+    current_meter_reading: Optional[float] = Field(default=0)
     @field_serializer("purchase_date")
     def serialize_dt(self, dt: datetime.date, _info):
         if dt:
             return dt.strftime("%m/%d/%Y")
 
-    @computed_field
-    @property
-    def current_meter_reading(self) -> float:
-        if len(self.meter_readings) > 0:
-            return sorted(self.meter_readings, key=lambda x: x.timestamp)[0].value
-        else:
-            return 0
+    # @computed_field
+    # @property
+    # def current_meter_reading(self) -> float:
+    #     if len(self.meter_readings) > 0:
+    #         return sorted(self.meter_readings, key=lambda x: x.timestamp)[0].value
+    #     else:
+    #         return 0
 
-    @computed_field
-    @property
-    def name(self) -> str:
-        return f"{self.year} {self.make} {self.model}"
+    # @computed_field
+    # @property
+    # def name(self) -> str:
+    #     return f"{self.year} {self.make} {self.model}"
 
 
 class MachineUpdateSchema(BaseModel):

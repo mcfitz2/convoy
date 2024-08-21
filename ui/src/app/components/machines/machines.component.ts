@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Machine, getMachines } from 'src/client';
 import { FormControl, FormGroup } from '@angular/forms';
+import { MachineSchema, getMachines } from 'src/client';
 
 @Component({
   selector: 'app-machines',
@@ -8,13 +8,13 @@ import { FormControl, FormGroup } from '@angular/forms';
   styleUrl: './machines.component.css'
 })
 export class MachinesComponent implements OnInit {
-  public machines: Machine[] = [];
+  public machines: MachineSchema[] = [];
   public loading: boolean = true;
   public createMode: boolean = false;
   protected readonly form = new FormGroup({
     files: new FormControl<FileList | null>(null),
   });
-  public machine: Machine = {
+  public machine: MachineSchema = {
     meter_unit: '',
     make: '',
     model: '',

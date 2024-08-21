@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { createSupply, getSupplies, updateSupply } from 'src/client';
+import { getSupplies } from 'src/client';
 import { ModifiableSupply } from '../../models/modifiable-supply.model';
 
 @Component({

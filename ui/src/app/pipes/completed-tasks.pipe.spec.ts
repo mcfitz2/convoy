@@ -1,8 +1,8 @@
-import { CompletedTasksPipe } from './completed-tasks.pipe';
+import { CompletedTaskSchemasPipe } from './completed-tasks.pipe';
 
-describe('CompletedTasksPipe', () => {
+describe('CompletedTaskSchemasPipe', () => {
   it('create an instance', () => {
-    const pipe = new CompletedTasksPipe();
+    const pipe = new CompletedTaskSchemasPipe();
     expect(pipe).toBeTruthy();
   });
 });

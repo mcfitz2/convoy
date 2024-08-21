@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SupplyEditComponent } from './supply-edit.component';
+import { SupplySchemaEditComponent } from './supply-edit.component';
 
-describe('SupplyEditComponent', () => {
-  let component: SupplyEditComponent;
-  let fixture: ComponentFixture<SupplyEditComponent>;
+describe('SupplySchemaEditComponent', () => {
+  let component: SupplySchemaEditComponent;
+  let fixture: ComponentFixture<SupplySchemaEditComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SupplyEditComponent]
+      imports: [SupplySchemaEditComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(SupplyEditComponent);
+    fixture = TestBed.createComponent(SupplySchemaEditComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

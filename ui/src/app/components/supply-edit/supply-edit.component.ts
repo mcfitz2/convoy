@@ -1,7 +1,6 @@
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormGroup, FormControl, FormArray } from '@angular/forms';
-import { ModifiableSupply } from 'src/app/models/modifiable-supply.model';
-import { Machine, Supply, createSupply, deleteSupply, getMachines, updateSupply } from 'src/client';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { MachineSchema, SupplySchema, createSupply, deleteSupply, getMachines, updateSupply } from 'src/client';
 
 @Component({
   selector: 'app-supply-edit',
@@ -13,8 +12,8 @@ export class SupplyEditComponent implements OnInit {
   @Input() create: boolean = false;
   @Output() close = new EventEmitter();
   public deleting = false;
-  @Input() public supply: Supply
-  public machines: Machine[] = [];
+  @Input() public supply: SupplySchema
+  public machines: MachineSchema[] = [];
   public units: string[] = ["each", "quart", "gallon"]
   public submitting: boolean = false;
   supplyForm = new FormGroup({

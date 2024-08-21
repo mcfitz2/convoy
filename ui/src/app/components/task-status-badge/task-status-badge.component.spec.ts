@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TaskStatusBadgeComponent } from './task-status-badge.component';
+import { TaskSchemaStatusBadgeComponent } from './task-status-badge.component';
 
-describe('TaskStatusBadgeComponent', () => {
-  let component: TaskStatusBadgeComponent;
-  let fixture: ComponentFixture<TaskStatusBadgeComponent>;
+describe('TaskSchemaStatusBadgeComponent', () => {
+  let component: TaskSchemaStatusBadgeComponent;
+  let fixture: ComponentFixture<TaskSchemaStatusBadgeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TaskStatusBadgeComponent]
+      imports: [TaskSchemaStatusBadgeComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(TaskStatusBadgeComponent);
+    fixture = TestBed.createComponent(TaskSchemaStatusBadgeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

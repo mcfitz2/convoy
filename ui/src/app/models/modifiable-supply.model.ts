@@ -1,15 +1,14 @@
-import { Signal } from "@angular/core"
-import { Supply, createSupply, deleteSupply, updateSupply } from "src/client"
+import { SupplySchema, createSupply, deleteSupply, updateSupply } from "src/client"
 
 export class ModifiableSupply {
-    supply: Supply
+    supply: SupplySchema
     modified: boolean = false
     blank: boolean = false
-    constructor(supply: Supply, blank: boolean = false) {
+    constructor(supply: SupplySchema, blank: boolean = false) {
         this.supply = supply 
         this.blank = blank
     }
-    public save(): Promise<Supply> {
+    public save(): Promise<SupplySchema> {
         if (this.supply.id) {
             return updateSupply({ supplyId: this.supply.id, requestBody: this.supply }).then((supply) => {
                 this.modified = false
@@ -25,7 +24,7 @@ export class ModifiableSupply {
         }
     }
 
-    public delete(): Promise<Supply> {
+    public delete(): Promise<SupplySchema> {
         return deleteSupply({supplyId: this.supply.id})
     }
 }

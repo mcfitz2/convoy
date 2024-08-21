@@ -1,7 +1,7 @@
-import { SelectedSupply } from '../selected-supply.model';
+import { SelectedSupplySchema } from '../selected-supply.model';
 
-describe('SelectedSupply', () => {
+describe('SelectedSupplySchema', () => {
   it('should create an instance', () => {
-    expect(new SelectedSupply()).toBeTruthy();
+    expect(new SelectedSupplySchema()).toBeTruthy();
   });
 });

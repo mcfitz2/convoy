@@ -1,12 +1,12 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Task } from 'src/client';
+import { TaskSchema } from 'src/client';
 
 @Pipe({
   name: 'completedTasks',
 })
 export class CompletedTasksPipe implements PipeTransform {
 
-  transform(value: Task[]): number {
+  transform(value: TaskSchema[]): number {
     return value.filter((task) => task.completed).length;
   }
 

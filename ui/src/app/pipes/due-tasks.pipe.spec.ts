@@ -1,8 +1,8 @@
-import { DueTasksPipe } from './due-tasks.pipe';
+import { DueTaskSchemasPipe } from './due-tasks.pipe';
 
-describe('DueTasksPipe', () => {
+describe('DueTaskSchemasPipe', () => {
   it('create an instance', () => {
-    const pipe = new DueTasksPipe();
+    const pipe = new DueTaskSchemasPipe();
     expect(pipe).toBeTruthy();
   });
 });

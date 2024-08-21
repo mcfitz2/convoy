@@ -7,7 +7,7 @@
                 <label>Machine</label>
                 <select clrSelect name="options" formControlName="machine_id">
                     <option [value]="null" [selected]="true">Universal</option>
-                    <option *ngFor="let machine of machines" [value]="machine.id">{{machine.name}}</option>
+                    <option *ngFor="let machine of machines" [value]="machine.id">{{machine.model}}</option>
                 </select>
             </clr-select-container>
             <clr-input-container>

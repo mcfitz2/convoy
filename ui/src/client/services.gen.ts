@@ -3,14 +3,14 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import { type UpdateMachineData, type UpdateMachineResponse, type DeleteMachineData, type DeleteMachineResponse, type GetMachineData, type GetMachineResponse, type GetMachinesResponse, type CreateMachineData, type CreateMachineResponse, type CreateReadingData, type CreateReadingResponse, type DeleteTaskData, type DeleteTaskResponse, type CreateTaskData, type CreateTaskResponse, type CompleteTaskData, type CompleteTaskResponse, type UpdateSupplyData, type UpdateSupplyResponse, type DeleteSupplyData, type DeleteSupplyResponse, type GetSuppliesResponse, type CreateSupplyData, type CreateSupplyResponse, UpdateMachineResponseTransformer, DeleteMachineResponseTransformer, GetMachineResponseTransformer, GetMachinesResponseTransformer, CreateMachineResponseTransformer, CreateReadingResponseTransformer } from './types.gen';
+import { type UpdateMachineData, type UpdateMachineResponse, type DeleteMachineData, type DeleteMachineResponse, type GetMachineData, type GetMachineResponse, type GetMachinesResponse, type CreateMachineData, type CreateMachineResponse, type CreateReadingData, type CreateReadingResponse, type DeleteTaskData, type DeleteTaskResponse, type GetTaskData, type GetTaskResponse, type GetTasksData, type GetTasksResponse, type CreateTaskData, type CreateTaskResponse, type CompleteTaskData, type CompleteTaskResponse, type UpdateSupplyData, type UpdateSupplyResponse, type DeleteSupplyData, type DeleteSupplyResponse, type GetSupplyData, type GetSupplyResponse, type GetSuppliesResponse, type CreateSupplyData, type CreateSupplyResponse, CreateReadingResponseTransformer, DeleteTaskResponseTransformer, GetTaskResponseTransformer, GetTasksResponseTransformer, CreateTaskResponseTransformer, CompleteTaskResponseTransformer, UpdateSupplyResponseTransformer, DeleteSupplyResponseTransformer, GetSupplyResponseTransformer, GetSuppliesResponseTransformer, CreateSupplyResponseTransformer } from './types.gen';
 
 /**
  * Update Machine
  * @param data The data for the request.
  * @param data.machineId
  * @param data.requestBody
- * @returns Machine Successful Response
+ * @returns MachineSchema Successful Response
  * @throws ApiError
  */
 export const updateMachine = (data: UpdateMachineData): CancelablePromise<UpdateMachineResponse> => { return __request(OpenAPI, {
@@ -21,7 +21,6 @@ export const updateMachine = (data: UpdateMachineData): CancelablePromise<Update
     },
     body: data.requestBody,
     mediaType: 'application/json',
-    responseTransformer: UpdateMachineResponseTransformer,
     errors: {
         422: 'Validation Error'
     }
@@ -31,7 +30,7 @@ export const updateMachine = (data: UpdateMachineData): CancelablePromise<Update
  * Delete Machine
  * @param data The data for the request.
  * @param data.machineId
- * @returns Machine Successful Response
+ * @returns MachineSchema Successful Response
  * @throws ApiError
  */
 export const deleteMachine = (data: DeleteMachineData): CancelablePromise<DeleteMachineResponse> => { return __request(OpenAPI, {
@@ -40,7 +39,6 @@ export const deleteMachine = (data: DeleteMachineData): CancelablePromise<Delete
     path: {
         machine_id: data.machineId
     },
-    responseTransformer: DeleteMachineResponseTransformer,
     errors: {
         422: 'Validation Error'
     }
@@ -50,7 +48,7 @@ export const deleteMachine = (data: DeleteMachineData): CancelablePromise<Delete
  * Get Machine
  * @param data The data for the request.
  * @param data.machineId
- * @returns Machine Successful Response
+ * @returns MachineSchema Successful Response
  * @throws ApiError
  */
 export const getMachine = (data: GetMachineData): CancelablePromise<GetMachineResponse> => { return __request(OpenAPI, {
@@ -59,7 +57,6 @@ export const getMachine = (data: GetMachineData): CancelablePromise<GetMachineRe
     path: {
         machine_id: data.machineId
     },
-    responseTransformer: GetMachineResponseTransformer,
     errors: {
         422: 'Validation Error'
     }
@@ -67,20 +64,19 @@ export const getMachine = (data: GetMachineData): CancelablePromise<GetMachineRe
 
 /**
  * Get Machines
- * @returns Machine Successful Response
+ * @returns MachineSchema Successful Response
  * @throws ApiError
  */
 export const getMachines = (): CancelablePromise<GetMachinesResponse> => { return __request(OpenAPI, {
     method: 'GET',
-    url: '/api/v1/machines',
-    responseTransformer: GetMachinesResponseTransformer
+    url: '/api/v1/machines'
 }); };
 
 /**
  * Create Machine
  * @param data The data for the request.
  * @param data.requestBody
- * @returns Machine Successful Response
+ * @returns MachineSchema Successful Response
  * @throws ApiError
  */
 export const createMachine = (data: CreateMachineData): CancelablePromise<CreateMachineResponse> => { return __request(OpenAPI, {
@@ -88,7 +84,6 @@ export const createMachine = (data: CreateMachineData): CancelablePromise<Create
     url: '/api/v1/machines',
     body: data.requestBody,
     mediaType: 'application/json',
-    responseTransformer: CreateMachineResponseTransformer,
     errors: {
         422: 'Validation Error'
     }
@@ -99,7 +94,7 @@ export const createMachine = (data: CreateMachineData): CancelablePromise<Create
  * @param data The data for the request.
  * @param data.machineId
  * @param data.requestBody
- * @returns MeterReading Successful Response
+ * @returns MeterReadingSchema Successful Response
  * @throws ApiError
  */
 export const createReading = (data: CreateReadingData): CancelablePromise<CreateReadingResponse> => { return __request(OpenAPI, {
@@ -121,7 +116,7 @@ export const createReading = (data: CreateReadingData): CancelablePromise<Create
  * @param data The data for the request.
  * @param data.taskId
  * @param data.machineId
- * @returns Task Successful Response
+ * @returns TaskSchema Successful Response
  * @throws ApiError
  */
 export const deleteTask = (data: DeleteTaskData): CancelablePromise<DeleteTaskResponse> => { return __request(OpenAPI, {
@@ -131,6 +126,47 @@ export const deleteTask = (data: DeleteTaskData): CancelablePromise<DeleteTaskRe
         task_id: data.taskId,
         machine_id: data.machineId
     },
+    responseTransformer: DeleteTaskResponseTransformer,
+    errors: {
+        422: 'Validation Error'
+    }
+}); };
+
+/**
+ * Get Task
+ * @param data The data for the request.
+ * @param data.taskId
+ * @param data.machineId
+ * @returns TaskSchema Successful Response
+ * @throws ApiError
+ */
+export const getTask = (data: GetTaskData): CancelablePromise<GetTaskResponse> => { return __request(OpenAPI, {
+    method: 'GET',
+    url: '/api/v1/machines/{machine_id}/tasks/{task_id}',
+    path: {
+        task_id: data.taskId,
+        machine_id: data.machineId
+    },
+    responseTransformer: GetTaskResponseTransformer,
+    errors: {
+        422: 'Validation Error'
+    }
+}); };
+
+/**
+ * Get Tasks
+ * @param data The data for the request.
+ * @param data.machineId
+ * @returns TaskSchema Successful Response
+ * @throws ApiError
+ */
+export const getTasks = (data: GetTasksData): CancelablePromise<GetTasksResponse> => { return __request(OpenAPI, {
+    method: 'GET',
+    url: '/api/v1/machines/{machine_id}/tasks',
+    path: {
+        machine_id: data.machineId
+    },
+    responseTransformer: GetTasksResponseTransformer,
     errors: {
         422: 'Validation Error'
     }
@@ -141,7 +177,7 @@ export const deleteTask = (data: DeleteTaskData): CancelablePromise<DeleteTaskRe
  * @param data The data for the request.
  * @param data.machineId
  * @param data.requestBody
- * @returns Task Successful Response
+ * @returns TaskSchema Successful Response
  * @throws ApiError
  */
 export const createTask = (data: CreateTaskData): CancelablePromise<CreateTaskResponse> => { return __request(OpenAPI, {
@@ -152,6 +188,7 @@ export const createTask = (data: CreateTaskData): CancelablePromise<CreateTaskRe
     },
     body: data.requestBody,
     mediaType: 'application/json',
+    responseTransformer: CreateTaskResponseTransformer,
     errors: {
         422: 'Validation Error'
     }
@@ -163,7 +200,7 @@ export const createTask = (data: CreateTaskData): CancelablePromise<CreateTaskRe
  * @param data.machineId
  * @param data.taskId
  * @param data.requestBody
- * @returns Task Successful Response
+ * @returns TaskSchema Successful Response
  * @throws ApiError
  */
 export const completeTask = (data: CompleteTaskData): CancelablePromise<CompleteTaskResponse> => { return __request(OpenAPI, {
@@ -175,6 +212,7 @@ export const completeTask = (data: CompleteTaskData): CancelablePromise<Complete
     },
     body: data.requestBody,
     mediaType: 'application/json',
+    responseTransformer: CompleteTaskResponseTransformer,
     errors: {
         422: 'Validation Error'
     }
@@ -185,7 +223,7 @@ export const completeTask = (data: CompleteTaskData): CancelablePromise<Complete
  * @param data The data for the request.
  * @param data.supplyId
  * @param data.requestBody
- * @returns Supply Successful Response
+ * @returns SupplySchema Successful Response
  * @throws ApiError
  */
 export const updateSupply = (data: UpdateSupplyData): CancelablePromise<UpdateSupplyResponse> => { return __request(OpenAPI, {
@@ -196,6 +234,7 @@ export const updateSupply = (data: UpdateSupplyData): CancelablePromise<UpdateSu
     },
     body: data.requestBody,
     mediaType: 'application/json',
+    responseTransformer: UpdateSupplyResponseTransformer,
     errors: {
         422: 'Validation Error'
     }
@@ -205,7 +244,7 @@ export const updateSupply = (data: UpdateSupplyData): CancelablePromise<UpdateSu
  * Delete Supply
  * @param data The data for the request.
  * @param data.supplyId
- * @returns Supply Successful Response
+ * @returns SupplySchema Successful Response
  * @throws ApiError
  */
 export const deleteSupply = (data: DeleteSupplyData): CancelablePromise<DeleteSupplyResponse> => { return __request(OpenAPI, {
@@ -214,6 +253,26 @@ export const deleteSupply = (data: DeleteSupplyData): CancelablePromise<DeleteSu
     path: {
         supply_id: data.supplyId
     },
+    responseTransformer: DeleteSupplyResponseTransformer,
+    errors: {
+        422: 'Validation Error'
+    }
+}); };
+
+/**
+ * Get Supply
+ * @param data The data for the request.
+ * @param data.supplyId
+ * @returns SupplySchema Successful Response
+ * @throws ApiError
+ */
+export const getSupply = (data: GetSupplyData): CancelablePromise<GetSupplyResponse> => { return __request(OpenAPI, {
+    method: 'GET',
+    url: '/api/v1/supplies/{supply_id}',
+    path: {
+        supply_id: data.supplyId
+    },
+    responseTransformer: GetSupplyResponseTransformer,
     errors: {
         422: 'Validation Error'
     }
@@ -221,19 +280,20 @@ export const deleteSupply = (data: DeleteSupplyData): CancelablePromise<DeleteSu
 
 /**
  * Get Supplies
- * @returns Supply Successful Response
+ * @returns SupplySchema Successful Response
  * @throws ApiError
  */
 export const getSupplies = (): CancelablePromise<GetSuppliesResponse> => { return __request(OpenAPI, {
     method: 'GET',
-    url: '/api/v1/supplies'
+    url: '/api/v1/supplies',
+    responseTransformer: GetSuppliesResponseTransformer
 }); };
 
 /**
  * Create Supply
  * @param data The data for the request.
  * @param data.requestBody
- * @returns Supply Successful Response
+ * @returns SupplySchema Successful Response
  * @throws ApiError
  */
 export const createSupply = (data: CreateSupplyData): CancelablePromise<CreateSupplyResponse> => { return __request(OpenAPI, {
@@ -241,6 +301,7 @@ export const createSupply = (data: CreateSupplyData): CancelablePromise<CreateSu
     url: '/api/v1/supplies',
     body: data.requestBody,
     mediaType: 'application/json',
+    responseTransformer: CreateSupplyResponseTransformer,
     errors: {
         422: 'Validation Error'
     }

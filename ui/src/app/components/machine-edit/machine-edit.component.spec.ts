@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MachineEditComponent } from './machine-edit.component';
+import { MachineSchemaEditComponent } from './machine-edit.component';
 
-describe('MachineEditComponent', () => {
-  let component: MachineEditComponent;
-  let fixture: ComponentFixture<MachineEditComponent>;
+describe('MachineSchemaEditComponent', () => {
+  let component: MachineSchemaEditComponent;
+  let fixture: ComponentFixture<MachineSchemaEditComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MachineEditComponent]
+      imports: [MachineSchemaEditComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(MachineEditComponent);
+    fixture = TestBed.createComponent(MachineSchemaEditComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
