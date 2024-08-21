@@ -37,11 +37,12 @@ jobs:
       - name: "Set up Python"
         uses: actions/setup-python@v5
         with:
-          python-version-file: "pyproject.toml"
+          python-version-file: "backend/pyproject.toml"
       - name: Test with pytest
         env:
           TODOIST_TOKEN: ${{ secrets.TODOIST_TOKEN }}
         run: |
+          cd backend
           uv sync --all-extras --dev
           uv run poe test_pipeline
       - name: Coveralls GitHub Action
