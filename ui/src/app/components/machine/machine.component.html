@@ -1,5 +1,5 @@
 <div class="card">
-    <div class="card-header">{{machine.name}}</div>
+    <div class="card-header">{{machine.year}} {{machine.make}} {{machine.model}}</div>
     <div class="card-block">
         <div class="card-text">
             <div class="container">
@@ -52,7 +52,7 @@
             <clr-dg-column>Notes</clr-dg-column>
 
             <clr-dg-row *ngFor="let task of filterCompleted(machine.tasks)">
-                <clr-dg-cell>{{ task.task_definition?.description }}</clr-dg-cell>
+                <clr-dg-cell>{{ task.description }}</clr-dg-cell>
                 <clr-dg-cell>{{ task.due_date | date }}</clr-dg-cell>
                 <clr-dg-cell>{{ task.completed_date | date }}</clr-dg-cell>
                 <clr-dg-cell>{{ task.due_meter_reading }}</clr-dg-cell>

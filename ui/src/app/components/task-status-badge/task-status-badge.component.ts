@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MachineSchema, TaskSchema } from 'src/client';
+import { Machine, Task } from 'src/client';
 import { UnitPluralPipe } from '../../pipes/unit-plural.pipe';
 
 @Component({
@@ -8,8 +8,8 @@ import { UnitPluralPipe } from '../../pipes/unit-plural.pipe';
   styleUrl: './task-status-badge.component.css'
 })
 export class TaskStatusBadgeComponent implements OnInit {
-  @Input() machine: MachineSchema
-  @Input() task: TaskSchema
+  @Input() machine: Machine
+  @Input() task: Task
   public message = 'Not Implemented'
   public class: string;
   public ngOnInit() {

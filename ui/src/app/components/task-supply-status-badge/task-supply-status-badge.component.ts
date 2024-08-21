@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MachineSchema, TaskSchema } from 'src/client';
+import { Machine, Supply, Task, getSupplies } from 'src/client';
 import { UnitPluralPipe } from '../../pipes/unit-plural.pipe';
 
 @Component({
@@ -8,12 +8,17 @@ import { UnitPluralPipe } from '../../pipes/unit-plural.pipe';
   styleUrl: './task-supply-status-badge.component.css'
 })
 export class TaskSupplyStatusBadgeComponent implements OnInit {
-  @Input() task: TaskSchema
-  public message = 'Not Implemented'
-  public class: string;
-  public ngOnInit() {
-      const missing_supplies = this.task.task_definition.supplies.some((ts) => {
-        return ts.supply.quantity_on_hand < ts.quantity
+  @Input() task: Task
+  public message: string = 'Not Implemented'
+  public class: string = "label label-danger"
+  suppliesById: Map<string, Supply> = new Map();
+  public async ngOnInit() {
+      this.suppliesById = (await getSupplies()).reduce((byId, supply) => {
+        byId.set(supply.id, supply);
+        return byId;
+      }, new Map())
+      const missing_supplies = this.task.supplies.some((ts) => {
+        return this.suppliesById.get(ts.supply_id).quantity_on_hand < ts.quantity_required
       })
       if (missing_supplies) {
         this.message = 'Missing Supplies'

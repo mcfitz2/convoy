@@ -1,4 +1,4 @@
-name: Docker
+name: test-and-build-app
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -20,8 +20,30 @@ env:
 
 
 jobs:
-  build:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: chartboost/ruff-action@v1
+        working-directory: backend
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Test with pytest
+        working-directory: backend
+        run: |
+          pip install pytest pytest-cov
+          pytest --cov=com --cov-report=xml --cov-report=html
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read

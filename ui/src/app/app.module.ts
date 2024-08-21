@@ -15,7 +15,6 @@ import { MachineComponent } from './components/machine/machine.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CompletedTasksPipe } from './pipes/completed-tasks.pipe';
 import { DueTasksPipe } from './pipes/due-tasks.pipe';
-import { OverduePipe } from './pipes/overdue.pipe';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TaskStatusBadgeComponent } from './components/task-status-badge/task-status-badge.component';
 import '@cds/core/icon/register.js';
@@ -42,7 +41,6 @@ ClarityIcons.addIcons(homeIcon, fuelIcon, tasksIcon, toolsIcon, plusCircleIcon, 
     MachineComponent,
     CompletedTasksPipe,
     DueTasksPipe,
-    OverduePipe,
     TaskStatusBadgeComponent,
     SuppliesComponent,
     MachineEditComponent,

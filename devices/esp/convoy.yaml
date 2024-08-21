@@ -1,0 +1,32 @@
+esphome:
+  name: convoy
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+external_components:
+  - source:
+      type: local
+      path: custom_components
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: ""
+
+ota:
+  password: ""
+
+wifi:
+  ssid: "IOT"
+  password: "fancyunicorn486"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Convoy Fallback Hotspot"
+    password: "QbS3nB4ZeTJa"
+
+captive_portal:
+    

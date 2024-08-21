@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MachineSchema, CompleteTaskSchema, TaskSchema, completeTask, deleteTaskDefinition } from 'src/client';
+import { Machine, Task, completeTask, deleteTask } from 'src/client';
 
 @Component({
   selector: 'app-task',
@@ -7,8 +7,8 @@ import { MachineSchema, CompleteTaskSchema, TaskSchema, completeTask, deleteTask
   styleUrl: './task.component.css'
 })
 export class TaskComponent implements OnInit {
-  @Input() task!: TaskSchema;
-  @Input() machine!: MachineSchema;
+  @Input() task!: Task;
+  @Input() machine!: Machine;
   @Output() refresh = new EventEmitter();
   public showComplete: boolean = false;
   ngOnInit(): void {
@@ -20,7 +20,7 @@ export class TaskComponent implements OnInit {
   }
   
   public deleteTask() {
-    deleteTaskDefinition({taskId: this.task.task_definition.id}).then(() => {
+    deleteTask({machineId: this.machine.id, taskId: this.task.id}).then(() => {
       this.refresh.emit();
     })
   }
@@ -32,8 +32,14 @@ export class TaskComponent implements OnInit {
     this.showComplete = false;
   }
   public completeTask() {
-    const converted: CompleteTaskSchema = {id: this.task.id!, completed_date: this.task.completed_date!, completed_meter_reading: this.task.completed_meter_reading!}
-    completeTask({taskId: this.task.id!, requestBody: converted}).then((task) => {
+    const converted: Task = {
+      id: this.task.id!, completed_date: this.task.completed_date!, completed_meter_reading: this.task.completed_meter_reading!,
+      description: '',
+      time_interval: 0,
+      meter_interval: 0,
+      supplies: []
+    }
+    completeTask({taskId: this.task.id!, machineId: this.machine.id, requestBody: converted}).then((task) => {
       this.showComplete = false;
       this.refresh.emit();
     })

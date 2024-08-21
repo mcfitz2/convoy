@@ -16,3 +16,13 @@
 #define AMBIENT_AIR_TEMPERATURE 0x46
 #define TIME_RUN_WITH_MIL_ON 0x4d
 #define TIME_SINCE_TROUBLE_CODES_CLEARED 0x4e
+
+
+#define PORTAL_SSID "convoy"
+
+
+#define mqtt_server       "xxx.cloudmqtt.com"
+#define mqtt_port         "12345"
+#define mqtt_user         "mqtt_user"
+#define mqtt_pass         "mqtt_pass"
+#define topic    "convoy"

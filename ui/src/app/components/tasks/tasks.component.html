@@ -45,35 +45,35 @@
             <clr-select-container>
                 <label>Machine</label>
                 <select clrSelect name="options" (change)="reloadSupplies()" [(ngModel)]="selectedMachineId">
-                    <option *ngFor="let machine of machines" value="{{machine.id}}">{{machine.name}}</option>
+                    <option *ngFor="let machine of machines" value="{{machine.id}}">{{machine.year}} {{machine.make}} {{machine.model}}</option>
                 </select>
             </clr-select-container>
             <clr-input-container>
                 <label>Description</label>
-                <input clrInput type="text" [(ngModel)]="taskDefinition.description" required name="description" />
+                <input clrInput type="text" [(ngModel)]="task.description" required name="description" />
             </clr-input-container>
             <clr-input-container>
                 <label>Meter Interval</label>
-                <input clrInput step="1000" min="1" type="number" [(ngModel)]="taskDefinition.meter_interval" required
+                <input clrInput step="1000" min="1" type="number" [(ngModel)]="task.meter_interval" required
                     name="meter_interval" />
                 <clr-control-helper>{{machinesById.get(selectedMachineId)?.meter_unit |
                     unitPlural}}</clr-control-helper>
             </clr-input-container>
             <clr-input-container>
                 <label>Time Interval</label>
-                <input clrInput type="number" min="1" [(ngModel)]="taskDefinition.time_interval" required
+                <input clrInput type="number" min="1" [(ngModel)]="task.time_interval" required
                     name="time_interval" />
                 <clr-control-helper>days</clr-control-helper>
             </clr-input-container>
             <clr-checkbox-container>
                 <label>Recurring</label>
                 <clr-checkbox-wrapper>
-                    <input type="checkbox" clrCheckbox [(ngModel)]="taskDefinition.recurring" name="recurring" />
+                    <input type="checkbox" clrCheckbox [(ngModel)]="task.recurring" name="recurring" />
                 </clr-checkbox-wrapper>
             </clr-checkbox-container>
             <clr-textarea-container>
                 <label>Notes</label>
-                <textarea clrTextarea type="text" [(ngModel)]="taskDefinition.notes" name="notes"></textarea>
+                <textarea clrTextarea type="text" [(ngModel)]="task.notes" name="notes"></textarea>
             </clr-textarea-container>
             <div>
                 <clr-combobox-container>

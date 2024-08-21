@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-header">
-        {{task?.task_definition?.description}}
+        {{task?.description}}
         <clr-button-group class="btn-primary btn-sm task-button-group">
             <clr-button (click)="openComplete()">View Details</clr-button>
             <clr-button (click)="sendToTodoist()">Send to Todoist</clr-button>
@@ -8,14 +8,14 @@
         </clr-button-group>
     </div>
     <div class="card-block">
-        <span class="label label-info">{{machine.name}}</span>
+        <span class="label label-info">{{machine.year}} {{machine.make}} {{machine.model}}</span>
         <app-task-status-badge [machine]="machine" [task]="task"></app-task-status-badge>
         <app-task-supply-status-badge [task]="task"></app-task-supply-status-badge>
 
     </div>
 </div>
 <clr-side-panel [(clrSidePanelOpen)]="showComplete" [clrSidePanelStaticBackdrop]="true">
-    <h3 class="side-panel-title">{{task?.task_definition?.description}}</h3>
+    <h3 class="side-panel-title">{{task?.description}}</h3>
     <div class="side-panel-body">
         <h2>Supplies</h2>
         <table class="table">
@@ -26,10 +26,10 @@
                 </tr>
             </thead>
             <tbody>
-                <span *ngIf="task.task_definition.supplies.length == 0">No supplies needed</span>
-                <tr *ngFor="let supply of task.task_definition.supplies">
-                    <td>{{supply.supply.name}}</td>
-                    <td>{{supply.quantity}} {{supply.supply.unit}}</td>
+                <span *ngIf="task.supplies.length == 0">No supplies needed</span>
+                <tr *ngFor="let supply of task.supplies">
+                    <td>{{supply.name}}</td>
+                    <td>{{supply.quantity_required}} {{supply.unit}}</td>
                 </tr>
             </tbody>
         </table>

@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormGroup, FormControl, FormArray } from '@angular/forms';
 import { ModifiableSupply } from 'src/app/models/modifiable-supply.model';
-import { MachineSchema, SupplySchema, createSupply, deleteSupply, getMachines } from 'src/client';
+import { Machine, Supply, createSupply, deleteSupply, getMachines, updateSupply } from 'src/client';
 
 @Component({
   selector: 'app-supply-edit',
@@ -13,11 +13,12 @@ export class SupplyEditComponent implements OnInit {
   @Input() create: boolean = false;
   @Output() close = new EventEmitter();
   public deleting = false;
-  @Input() public supply: SupplySchema
-  public machines: MachineSchema[] = [];
+  @Input() public supply: Supply
+  public machines: Machine[] = [];
   public units: string[] = ["each", "quart", "gallon"]
   public submitting: boolean = false;
   supplyForm = new FormGroup({
+    id: new FormControl(''),
     name: new FormControl(''),
     machine_id: new FormControl(null),
     quantity_on_hand: new FormControl<number>(0),
@@ -29,8 +30,13 @@ export class SupplyEditComponent implements OnInit {
 
   }
   async ngOnInit(): Promise<void> {
-    if (!this.create) {
+    if (!this.create && this.supply) {
       this.supplyForm.patchValue(this.supply)
+      this.supply.parts.forEach((part) => {
+        this.supplyForm.controls['parts'].push(new FormGroup({name: new FormControl(part.name), link: new FormControl(part.link)}))
+      })
+      console.log(this.supply);
+      console.log(this.supplyForm)
       // this.cdr.detectChanges();
     } else {
       this.addEmptyPart()
@@ -57,7 +63,11 @@ export class SupplyEditComponent implements OnInit {
     if (this.supply.machine_id == 'null') {
       this.supply = null;
     }
-    await createSupply({requestBody:this.supply})
+    if (this.supply.id) {
+      await updateSupply({supplyId: this.supply.id, requestBody: this.supply})
+    } else {
+      await createSupply({requestBody:this.supply})
+    }
     this.supplyForm.reset()
     this.close.emit();
   }

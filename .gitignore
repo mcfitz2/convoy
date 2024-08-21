@@ -45,7 +45,10 @@ ui/.angular
 backend/__pycache__
 ui/node_modules
 ui/dist
-backend/convoy.db
+**/convoy.db
+backend/**__pycache__
+backend/.coverage
+backend/cov.xml
 ui/.vscode
 devices/.pio
 devices/.vscode
