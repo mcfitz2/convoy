@@ -62,3 +62,4 @@ backend/main/__pycache__/*
 backend/convoy.db
 backend/tests/__pycache__/*
 backend/convoy.egg-info/
+backend/coverage.xml

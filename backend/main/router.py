@@ -1,9 +1,8 @@
 from typing import List
 
-from .utils import setup_logger
-from .dependencies import get_service
-from .service import ConvoyService
+from fastapi import APIRouter, Depends
 
+from .dependencies import get_service
 from .models import (
     Machine,
     MachineSchema,
@@ -18,9 +17,8 @@ from .models import (
     TaskCreateSchema,
     TaskSchema,
 )
-from fastapi import Depends
-
-from fastapi import APIRouter
+from .service import ConvoyService
+from .utils import setup_logger
 
 logger = setup_logger("Router")
 

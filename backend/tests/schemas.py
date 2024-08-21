@@ -1,8 +1,16 @@
 import datetime
-from pydantic import ValidationError
-import pytest
 
-from ..main.models import MeterReadingSchema, PartSchema, MachineSchema, TaskCompleteSchema, TaskSchema
+import pytest
+from pydantic import ValidationError
+
+from ..main.models import (
+    MachineSchema,
+    MeterReadingSchema,
+    PartSchema,
+    TaskCompleteSchema,
+    TaskSchema,
+)
+
 
 def test_parse_date():
     m1 = MachineSchema(year=2020, make="Chevy", model="Silverado", meter_unit="mile", purchase_date="08/19/24")

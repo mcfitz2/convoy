@@ -1,10 +1,12 @@
 import datetime
 import logging
-from ..main.service import convoy_service as service
-from ..main.models import Machine, MeterReading, Task
-from ..main.main import app
-from httpx import ASGITransport, AsyncClient
 import os
+
+from httpx import ASGITransport, AsyncClient
+
+from ..main.main import app
+from ..main.models import Machine, MeterReading, Task
+from ..main.service import convoy_service as service
 
 
 async def init():

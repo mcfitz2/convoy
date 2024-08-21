@@ -1,16 +1,26 @@
 import datetime
-from typing import Optional, List
-from pydantic import BaseModel, ConfigDict, computed_field, field_serializer, field_validator, Field
-from .utils import parse_date, parse_timestamp, uuid_gen
-from sqlalchemy import CheckConstraint, ForeignKey, Numeric
-from sqlalchemy import String
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
-from dateutil.parser import parse
-from sqlalchemy.orm import validates
+from typing import List, Optional
+
 import validators
+from dateutil.parser import parse
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    computed_field,
+    field_serializer,
+    field_validator,
+)
+from sqlalchemy import CheckConstraint, ForeignKey, Numeric, String
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    mapped_column,
+    relationship,
+    validates,
+)
+
+from .utils import parse_date, parse_timestamp, uuid_gen
 
 schema = "convoy"
 

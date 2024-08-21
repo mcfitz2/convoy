@@ -1,11 +1,29 @@
 import datetime
 import logging
-import pytest
 
-from .utils import complete_task_via_api, create_machine_via_service, create_supply_via_api, delete_machine_via_api, delete_supply_via_api, get_machines_via_api, get_supplies_via_api, get_supply_via_api, init, create_machine_via_api, create_task_via_api, get_task_via_api, get_tasks_via_api, delete_task_via_api, get_machine_via_api, update_supply_via_api
-from ..main.main import app
-from httpx import ASGITransport, AsyncClient
+import pytest
 from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
+
+from ..main.main import app
+from .utils import (
+    complete_task_via_api,
+    create_machine_via_api,
+    create_machine_via_service,
+    create_supply_via_api,
+    create_task_via_api,
+    delete_machine_via_api,
+    delete_supply_via_api,
+    delete_task_via_api,
+    get_machine_via_api,
+    get_machines_via_api,
+    get_supplies_via_api,
+    get_supply_via_api,
+    get_task_via_api,
+    get_tasks_via_api,
+    init,
+    update_supply_via_api,
+)
 
 client = TestClient(app)
 

@@ -1,6 +1,15 @@
 import pytest
+
 from ..main.service import convoy_service as service
-from .utils import init, delete_all_doist_tasks, create_machine_via_api, create_task_via_api, get_task_via_api, get_tasks_via_api, delete_task_via_api
+from .utils import (
+    create_machine_via_api,
+    create_task_via_api,
+    delete_all_doist_tasks,
+    delete_task_via_api,
+    get_task_via_api,
+    get_tasks_via_api,
+    init,
+)
 
 
 @pytest.mark.asyncio
