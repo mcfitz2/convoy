@@ -265,8 +265,8 @@ class TaskCreateSchema(BaseModel):
     meter_interval: float
     recurring: bool
     notes: Optional[str] = None
-    due_date: Optional[datetime.date]
-    due_meter_reading: Optional[float]
+    due_date: Optional[datetime.date] = Field(default=None)
+    due_meter_reading: Optional[float] = Field(default=0)
 
 
 class MachineSchema(BaseModel):

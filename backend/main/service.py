@@ -92,7 +92,10 @@ class ConvoyService:
     async def get_machines(self) -> List[Machine]:
         async with self.async_session() as session:
             return (await session.execute(select(Machine))).unique().scalars().all()
-
+    async def get_current_meter_reading(self, machine_id: str) -> float:
+        async with self.async_session() as session:
+            reading = (await session.execute(select(MeterReading).where(MeterReading.machine_id == machine_id)).order_by(MeterReading.timestamp)).scalars().first()
+            return reading.value
     async def record_reading(
         self, machine_id: str, reading: MeterReading
     ) -> MeterReading:
@@ -110,7 +113,7 @@ class ConvoyService:
         task.due_meter_reading = (
             task.due_meter_reading
             if task.due_meter_reading
-            else machine.current_meter_reading()
+            else await self.get_current_meter_reading(machine.id)
         )
         task.due_date = task.due_date if task.due_date else datetime.date.today()
         task.machine_id = machine_id
