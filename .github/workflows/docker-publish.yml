@@ -23,7 +23,7 @@ jobs:
   lint:
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: backend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
   test:
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: backend
     runs-on: ubuntu-latest
     steps:
       - name: Set up Python
