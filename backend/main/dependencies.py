@@ -1,4 +1,4 @@
-from service import ConvoyService, convoy_service
+from .service import ConvoyService, convoy_service
 
 
 def get_service() -> ConvoyService:

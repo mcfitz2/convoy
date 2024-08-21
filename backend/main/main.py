@@ -1,11 +1,11 @@
 from contextlib import asynccontextmanager
-from utils import (
+from .utils import (
     custom_generate_unique_id,
 )
 from fastapi import FastAPI
 
-from service import convoy_service
-from router import router
+from .service import convoy_service
+from .router import router
 
 
 

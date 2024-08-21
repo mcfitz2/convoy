@@ -1,10 +1,10 @@
 from typing import List
 
-from utils import setup_logger
-from dependencies import get_service
-from service import ConvoyService
+from .utils import setup_logger
+from .dependencies import get_service
+from .service import ConvoyService
 
-from models import Machine, MachineSchema, MachineUpdateSchema, MeterReading, MeterReadingSchema, SupplySchema, Task, TaskCompleteSchema, TaskCreateSchema, TaskSchema
+from .models import Machine, MachineSchema, MachineUpdateSchema, MeterReading, MeterReadingSchema, SupplySchema, Task, TaskCompleteSchema, TaskCreateSchema, TaskSchema
 from fastapi import Depends
 
 from fastapi import APIRouter

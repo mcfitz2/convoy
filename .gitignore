@@ -58,7 +58,6 @@ backend/convoy.db
 **/.pytest_cache
 
 backend/convoy.db
-backend/src/__pycache__/*
-backend/src/__pycache__/exceptions.cpython-311.pyc
-backend/src/__pycache__/main.cpython-311.pyc
+backend/main/__pycache__/*
 backend/convoy.db
+backend/tests/__pycache__/*

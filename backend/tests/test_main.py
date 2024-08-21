@@ -2,9 +2,9 @@ import datetime
 import logging
 from pydantic import ValidationError
 import pytest
-from service import convoy_service as service
-from models import Machine, MeterReading, MeterReadingSchema, Task, MachineSchema, TaskSchema
-from main import app
+from ..main.service import convoy_service as service
+from ..main.models import Machine, MeterReading, MeterReadingSchema, Task, MachineSchema, TaskSchema
+from ..main.main import app
 from httpx import ASGITransport, AsyncClient
 from fastapi.testclient import TestClient
 import os

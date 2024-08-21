@@ -4,9 +4,9 @@ from typing import List, Tuple
 
 import requests
 from sqlalchemy import select, update
-from exceptions import MachineNotFound, TaskNotFound
-from utils import LogRetry, setup_logger
-from models import Base, Machine, MeterReading, Supply, Task
+from .exceptions import MachineNotFound, TaskNotFound
+from .utils import LogRetry, setup_logger
+from .models import Base, Machine, MeterReading, Supply, Task
 from todoist_api_python.api_async import TodoistAPIAsync
 from todoist_api_python.models import Task as TDTask
 

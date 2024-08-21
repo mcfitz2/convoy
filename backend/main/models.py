@@ -1,7 +1,7 @@
 import datetime
 from typing import Optional, List
 from pydantic import BaseModel, ConfigDict, computed_field, field_serializer, field_validator, Field
-from utils import parse_date, parse_timestamp, uuid_gen
+from .utils import parse_date, parse_timestamp, uuid_gen
 from sqlalchemy import CheckConstraint, ForeignKey, Numeric
 from sqlalchemy import String
 from sqlalchemy.orm import DeclarativeBase
