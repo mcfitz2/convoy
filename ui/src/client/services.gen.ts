@@ -3,11 +3,71 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import { type GetMachinesResponse, type CreateMachineData, type CreateMachineResponse, type GetSuppliesResponse, type CreateSupplyData, type CreateSupplyResponse, type DeleteSupplyData, type DeleteSupplyResponse, type UpdateSupplyData, type UpdateSupplyResponse, type AssignSuppliesData, type AssignSuppliesResponse, type GetMachineData, type GetMachineResponse, type DeleteMachineData, type DeleteMachineResponse, type UpdateMachineData, type UpdateMachineResponse, type GetReadingsData, type GetReadingsResponse, type CreateReadingData, type CreateReadingResponse, type GetReadingData, type GetReadingResponse, type GetTasksData, type GetTasksResponse, type GetTaskData, type GetTaskResponse, type GetTaskDefinitionsData, type GetTaskDefinitionsResponse, type CreateTaskDefinitionData, type CreateTaskDefinitionResponse, type GetTaskDefinitionData, type GetTaskDefinitionResponse, type DeleteTaskData, type DeleteTaskResponse, type DeleteTaskDefinitionData, type DeleteTaskDefinitionResponse, type CompleteTaskData, type CompleteTaskResponse, GetMachinesResponseTransformer, GetReadingsResponseTransformer, CreateReadingResponseTransformer, GetReadingResponseTransformer, GetTasksResponseTransformer, GetTaskResponseTransformer, DeleteTaskResponseTransformer, CompleteTaskResponseTransformer } from './types.gen';
+import { type UpdateMachineData, type UpdateMachineResponse, type DeleteMachineData, type DeleteMachineResponse, type GetMachineData, type GetMachineResponse, type GetMachinesResponse, type CreateMachineData, type CreateMachineResponse, type CreateReadingData, type CreateReadingResponse, type DeleteTaskData, type DeleteTaskResponse, type CreateTaskData, type CreateTaskResponse, type CompleteTaskData, type CompleteTaskResponse, type UpdateSupplyData, type UpdateSupplyResponse, type DeleteSupplyData, type DeleteSupplyResponse, type GetSuppliesResponse, type CreateSupplyData, type CreateSupplyResponse, UpdateMachineResponseTransformer, DeleteMachineResponseTransformer, GetMachineResponseTransformer, GetMachinesResponseTransformer, CreateMachineResponseTransformer, CreateReadingResponseTransformer } from './types.gen';
+
+/**
+ * Update Machine
+ * @param data The data for the request.
+ * @param data.machineId
+ * @param data.requestBody
+ * @returns Machine Successful Response
+ * @throws ApiError
+ */
+export const updateMachine = (data: UpdateMachineData): CancelablePromise<UpdateMachineResponse> => { return __request(OpenAPI, {
+    method: 'PATCH',
+    url: '/api/v1/machines/{machine_id}',
+    path: {
+        machine_id: data.machineId
+    },
+    body: data.requestBody,
+    mediaType: 'application/json',
+    responseTransformer: UpdateMachineResponseTransformer,
+    errors: {
+        422: 'Validation Error'
+    }
+}); };
+
+/**
+ * Delete Machine
+ * @param data The data for the request.
+ * @param data.machineId
+ * @returns Machine Successful Response
+ * @throws ApiError
+ */
+export const deleteMachine = (data: DeleteMachineData): CancelablePromise<DeleteMachineResponse> => { return __request(OpenAPI, {
+    method: 'DELETE',
+    url: '/api/v1/machines/{machine_id}',
+    path: {
+        machine_id: data.machineId
+    },
+    responseTransformer: DeleteMachineResponseTransformer,
+    errors: {
+        422: 'Validation Error'
+    }
+}); };
+
+/**
+ * Get Machine
+ * @param data The data for the request.
+ * @param data.machineId
+ * @returns Machine Successful Response
+ * @throws ApiError
+ */
+export const getMachine = (data: GetMachineData): CancelablePromise<GetMachineResponse> => { return __request(OpenAPI, {
+    method: 'GET',
+    url: '/api/v1/machines/{machine_id}',
+    path: {
+        machine_id: data.machineId
+    },
+    responseTransformer: GetMachineResponseTransformer,
+    errors: {
+        422: 'Validation Error'
+    }
+}); };
 
 /**
  * Get Machines
- * @returns MachineDetailed Successful Response
+ * @returns Machine Successful Response
  * @throws ApiError
  */
 export const getMachines = (): CancelablePromise<GetMachinesResponse> => { return __request(OpenAPI, {
@@ -28,171 +88,7 @@ export const createMachine = (data: CreateMachineData): CancelablePromise<Create
     url: '/api/v1/machines',
     body: data.requestBody,
     mediaType: 'application/json',
-    errors: {
-        422: 'Validation Error'
-    }
-}); };
-
-/**
- * Get Supplies
- * @returns SupplyDetailed Successful Response
- * @throws ApiError
- */
-export const getSupplies = (): CancelablePromise<GetSuppliesResponse> => { return __request(OpenAPI, {
-    method: 'GET',
-    url: '/api/v1/supplies'
-}); };
-
-/**
- * Create Supply
- * @param data The data for the request.
- * @param data.requestBody
- * @returns Supply Successful Response
- * @throws ApiError
- */
-export const createSupply = (data: CreateSupplyData): CancelablePromise<CreateSupplyResponse> => { return __request(OpenAPI, {
-    method: 'POST',
-    url: '/api/v1/supplies',
-    body: data.requestBody,
-    mediaType: 'application/json',
-    errors: {
-        422: 'Validation Error'
-    }
-}); };
-
-/**
- * Delete Supply
- * @param data The data for the request.
- * @param data.supplyId
- * @returns Supply Successful Response
- * @throws ApiError
- */
-export const deleteSupply = (data: DeleteSupplyData): CancelablePromise<DeleteSupplyResponse> => { return __request(OpenAPI, {
-    method: 'DELETE',
-    url: '/api/v1/supplies/{supply_id}',
-    path: {
-        supply_id: data.supplyId
-    },
-    errors: {
-        422: 'Validation Error'
-    }
-}); };
-
-/**
- * Update Supply
- * @param data The data for the request.
- * @param data.supplyId
- * @param data.requestBody
- * @returns Supply Successful Response
- * @throws ApiError
- */
-export const updateSupply = (data: UpdateSupplyData): CancelablePromise<UpdateSupplyResponse> => { return __request(OpenAPI, {
-    method: 'PATCH',
-    url: '/api/v1/supplies/{supply_id}',
-    path: {
-        supply_id: data.supplyId
-    },
-    body: data.requestBody,
-    mediaType: 'application/json',
-    errors: {
-        422: 'Validation Error'
-    }
-}); };
-
-/**
- * Assign Supplies
- * @param data The data for the request.
- * @param data.machineId
- * @param data.taskDefId
- * @param data.requestBody
- * @returns APIResponse Successful Response
- * @throws ApiError
- */
-export const assignSupplies = (data: AssignSuppliesData): CancelablePromise<AssignSuppliesResponse> => { return __request(OpenAPI, {
-    method: 'POST',
-    url: '/api/v1/machines/{machine_id}/task_definitions/{task_def_id}/supplies',
-    path: {
-        machine_id: data.machineId,
-        task_def_id: data.taskDefId
-    },
-    body: data.requestBody,
-    mediaType: 'application/json',
-    errors: {
-        422: 'Validation Error'
-    }
-}); };
-
-/**
- * Get Machine
- * @param data The data for the request.
- * @param data.machineId
- * @returns Machine Successful Response
- * @throws ApiError
- */
-export const getMachine = (data: GetMachineData): CancelablePromise<GetMachineResponse> => { return __request(OpenAPI, {
-    method: 'GET',
-    url: '/api/v1/machines/{machine_id}',
-    path: {
-        machine_id: data.machineId
-    },
-    errors: {
-        422: 'Validation Error'
-    }
-}); };
-
-/**
- * Delete Machine
- * @param data The data for the request.
- * @param data.machineId
- * @returns Machine Successful Response
- * @throws ApiError
- */
-export const deleteMachine = (data: DeleteMachineData): CancelablePromise<DeleteMachineResponse> => { return __request(OpenAPI, {
-    method: 'DELETE',
-    url: '/api/v1/machines/{machine_id}',
-    path: {
-        machine_id: data.machineId
-    },
-    errors: {
-        422: 'Validation Error'
-    }
-}); };
-
-/**
- * Update Machine
- * @param data The data for the request.
- * @param data.machineId
- * @param data.requestBody
- * @returns Machine Successful Response
- * @throws ApiError
- */
-export const updateMachine = (data: UpdateMachineData): CancelablePromise<UpdateMachineResponse> => { return __request(OpenAPI, {
-    method: 'PATCH',
-    url: '/api/v1/machines/{machine_id}',
-    path: {
-        machine_id: data.machineId
-    },
-    body: data.requestBody,
-    mediaType: 'application/json',
-    errors: {
-        422: 'Validation Error'
-    }
-}); };
-
-/**
- * Get Readings
- * @param data The data for the request.
- * @param data.machineId
- * @returns MeterReading Successful Response
- * @throws ApiError
- */
-export const getReadings = (data: GetReadingsData): CancelablePromise<GetReadingsResponse> => { return __request(OpenAPI, {
-    method: 'GET',
-    url: '/api/v1/machines/{machine_id}/readings',
-    path: {
-        machine_id: data.machineId
-    },
-    responseTransformer: GetReadingsResponseTransformer,
+    responseTransformer: CreateMachineResponseTransformer,
     errors: {
         422: 'Validation Error'
     }
@@ -221,157 +117,41 @@ export const createReading = (data: CreateReadingData): CancelablePromise<Create
 }); };
 
 /**
- * Get Reading
- * @param data The data for the request.
- * @param data.machineId
- * @param data.readingId
- * @returns MeterReading Successful Response
- * @throws ApiError
- */
-export const getReading = (data: GetReadingData): CancelablePromise<GetReadingResponse> => { return __request(OpenAPI, {
-    method: 'GET',
-    url: '/api/v1/machines/{machine_id}/readings/{reading_id}',
-    path: {
-        machine_id: data.machineId,
-        reading_id: data.readingId
-    },
-    responseTransformer: GetReadingResponseTransformer,
-    errors: {
-        422: 'Validation Error'
-    }
-}); };
-
-/**
- * Get Tasks
- * @param data The data for the request.
- * @param data.machineId
- * @returns TaskDetailed Successful Response
- * @throws ApiError
- */
-export const getTasks = (data: GetTasksData): CancelablePromise<GetTasksResponse> => { return __request(OpenAPI, {
-    method: 'GET',
-    url: '/api/v1/machines/{machine_id}/tasks',
-    path: {
-        machine_id: data.machineId
-    },
-    responseTransformer: GetTasksResponseTransformer,
-    errors: {
-        422: 'Validation Error'
-    }
-}); };
-
-/**
- * Get Task
- * @param data The data for the request.
- * @param data.machineId
- * @param data.taskId
- * @returns TaskDetailed Successful Response
- * @throws ApiError
- */
-export const getTask = (data: GetTaskData): CancelablePromise<GetTaskResponse> => { return __request(OpenAPI, {
-    method: 'GET',
-    url: '/api/v1/machines/{machine_id}/tasks/{task_id}',
-    path: {
-        machine_id: data.machineId,
-        task_id: data.taskId
-    },
-    responseTransformer: GetTaskResponseTransformer,
-    errors: {
-        422: 'Validation Error'
-    }
-}); };
-
-/**
- * Get Task Definitions
- * @param data The data for the request.
- * @param data.machineId
- * @returns TaskDefinition Successful Response
- * @throws ApiError
- */
-export const getTaskDefinitions = (data: GetTaskDefinitionsData): CancelablePromise<GetTaskDefinitionsResponse> => { return __request(OpenAPI, {
-    method: 'GET',
-    url: '/api/v1/machines/{machine_id}/task_definitions',
-    path: {
-        machine_id: data.machineId
-    },
-    errors: {
-        422: 'Validation Error'
-    }
-}); };
-
-/**
- * Create Task Definition
- * @param data The data for the request.
- * @param data.machineId
- * @param data.requestBody
- * @returns TaskDefinition Successful Response
- * @throws ApiError
- */
-export const createTaskDefinition = (data: CreateTaskDefinitionData): CancelablePromise<CreateTaskDefinitionResponse> => { return __request(OpenAPI, {
-    method: 'POST',
-    url: '/api/v1/machines/{machine_id}/task_definitions',
-    path: {
-        machine_id: data.machineId
-    },
-    body: data.requestBody,
-    mediaType: 'application/json',
-    errors: {
-        422: 'Validation Error'
-    }
-}); };
-
-/**
- * Get Task Definition
- * @param data The data for the request.
- * @param data.machineId
- * @param data.taskDefinitionId
- * @returns TaskDefinition Successful Response
- * @throws ApiError
- */
-export const getTaskDefinition = (data: GetTaskDefinitionData): CancelablePromise<GetTaskDefinitionResponse> => { return __request(OpenAPI, {
-    method: 'GET',
-    url: '/api/v1/machines/{machine_id}/task_definitions/{task_definition_id}',
-    path: {
-        machine_id: data.machineId,
-        task_definition_id: data.taskDefinitionId
-    },
-    errors: {
-        422: 'Validation Error'
-    }
-}); };
-
-/**
  * Delete Task
  * @param data The data for the request.
  * @param data.taskId
+ * @param data.machineId
  * @returns Task Successful Response
  * @throws ApiError
  */
 export const deleteTask = (data: DeleteTaskData): CancelablePromise<DeleteTaskResponse> => { return __request(OpenAPI, {
     method: 'DELETE',
-    url: '/api/v1/tasks/{task_id}',
+    url: '/api/v1/machines/{machine_id}/tasks/{task_id}',
     path: {
-        task_id: data.taskId
+        task_id: data.taskId,
+        machine_id: data.machineId
     },
-    responseTransformer: DeleteTaskResponseTransformer,
     errors: {
         422: 'Validation Error'
     }
 }); };
 
 /**
- * Delete Task Definition
+ * Create Task
  * @param data The data for the request.
- * @param data.taskId
- * @returns TaskDefinition Successful Response
+ * @param data.machineId
+ * @param data.requestBody
+ * @returns Task Successful Response
  * @throws ApiError
  */
-export const deleteTaskDefinition = (data: DeleteTaskDefinitionData): CancelablePromise<DeleteTaskDefinitionResponse> => { return __request(OpenAPI, {
-    method: 'DELETE',
-    url: '/api/v1/task_definitions/{task_id}',
+export const createTask = (data: CreateTaskData): CancelablePromise<CreateTaskResponse> => { return __request(OpenAPI, {
+    method: 'POST',
+    url: '/api/v1/machines/{machine_id}/tasks',
     path: {
-        task_id: data.taskId
+        machine_id: data.machineId
     },
+    body: data.requestBody,
+    mediaType: 'application/json',
     errors: {
         422: 'Validation Error'
     }
@@ -380,6 +160,7 @@ export const deleteTaskDefinition = (data: DeleteTaskDefinitionData): Cancelable
 /**
  * Complete Task
  * @param data The data for the request.
+ * @param data.machineId
  * @param data.taskId
  * @param data.requestBody
  * @returns Task Successful Response
@@ -387,13 +168,79 @@ export const deleteTaskDefinition = (data: DeleteTaskDefinitionData): Cancelable
  */
 export const completeTask = (data: CompleteTaskData): CancelablePromise<CompleteTaskResponse> => { return __request(OpenAPI, {
     method: 'POST',
-    url: '/api/v1/tasks/{task_id}/complete',
+    url: '/api/v1/machines/{machine_id}/tasks/{task_id}/complete',
     path: {
+        machine_id: data.machineId,
         task_id: data.taskId
     },
     body: data.requestBody,
     mediaType: 'application/json',
-    responseTransformer: CompleteTaskResponseTransformer,
+    errors: {
+        422: 'Validation Error'
+    }
+}); };
+
+/**
+ * Update Supply
+ * @param data The data for the request.
+ * @param data.supplyId
+ * @param data.requestBody
+ * @returns Supply Successful Response
+ * @throws ApiError
+ */
+export const updateSupply = (data: UpdateSupplyData): CancelablePromise<UpdateSupplyResponse> => { return __request(OpenAPI, {
+    method: 'PATCH',
+    url: '/api/v1/supplies/{supply_id}',
+    path: {
+        supply_id: data.supplyId
+    },
+    body: data.requestBody,
+    mediaType: 'application/json',
+    errors: {
+        422: 'Validation Error'
+    }
+}); };
+
+/**
+ * Delete Supply
+ * @param data The data for the request.
+ * @param data.supplyId
+ * @returns Supply Successful Response
+ * @throws ApiError
+ */
+export const deleteSupply = (data: DeleteSupplyData): CancelablePromise<DeleteSupplyResponse> => { return __request(OpenAPI, {
+    method: 'DELETE',
+    url: '/api/v1/supplies/{supply_id}',
+    path: {
+        supply_id: data.supplyId
+    },
+    errors: {
+        422: 'Validation Error'
+    }
+}); };
+
+/**
+ * Get Supplies
+ * @returns Supply Successful Response
+ * @throws ApiError
+ */
+export const getSupplies = (): CancelablePromise<GetSuppliesResponse> => { return __request(OpenAPI, {
+    method: 'GET',
+    url: '/api/v1/supplies'
+}); };
+
+/**
+ * Create Supply
+ * @param data The data for the request.
+ * @param data.requestBody
+ * @returns Supply Successful Response
+ * @throws ApiError
+ */
+export const createSupply = (data: CreateSupplyData): CancelablePromise<CreateSupplyResponse> => { return __request(OpenAPI, {
+    method: 'POST',
+    url: '/api/v1/supplies',
+    body: data.requestBody,
+    mediaType: 'application/json',
     errors: {
         422: 'Validation Error'
     }

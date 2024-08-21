@@ -1,11 +1,11 @@
 import { Signal } from "@angular/core"
-import { Supply, SupplyDetailed, createSupply, deleteSupply, updateSupply } from "src/client"
+import { Supply, createSupply, deleteSupply, updateSupply } from "src/client"
 
 export class ModifiableSupply {
-    supply: SupplyDetailed
+    supply: Supply
     modified: boolean = false
     blank: boolean = false
-    constructor(supply: SupplyDetailed, blank: boolean = false) {
+    constructor(supply: Supply, blank: boolean = false) {
         this.supply = supply 
         this.blank = blank
     }

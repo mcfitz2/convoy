@@ -1,47 +1,55 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormGroup, FormControl, FormArray } from '@angular/forms';
 import { ModifiableSupply } from 'src/app/models/modifiable-supply.model';
-import { MachineDetailed, SupplyDetailed, createSupply, getMachines } from 'src/client';
+import { Machine, Supply, createSupply, deleteSupply, getMachines, updateSupply } from 'src/client';
 
 @Component({
   selector: 'app-supply-edit',
   templateUrl: './supply-edit.component.html',
   styleUrl: './supply-edit.component.css'
 })
-export class SupplyEditComponent {
+export class SupplyEditComponent implements OnInit {
   @Input() open: boolean = false;
   @Input() create: boolean = false;
   @Output() close = new EventEmitter();
   public deleting = false;
-  public supply: SupplyDetailed
-  public machines: MachineDetailed[] = [];
+  @Input() public supply: Supply
+  public machines: Machine[] = [];
   public units: string[] = ["each", "quart", "gallon"]
-
+  public submitting: boolean = false;
   supplyForm = new FormGroup({
+    id: new FormControl(''),
     name: new FormControl(''),
-    machine_id: new FormControl(''),
+    machine_id: new FormControl(null),
     quantity_on_hand: new FormControl<number>(0),
     unit: new FormControl(''),
     parts: new FormArray([
     ])
   })
-  constructor() {
+  constructor(private cdr: ChangeDetectorRef) {
 
   }
   async ngOnInit(): Promise<void> {
-    if (!this.create) {
+    if (!this.create && this.supply) {
       this.supplyForm.patchValue(this.supply)
+      this.supply.parts.forEach((part) => {
+        this.supplyForm.controls['parts'].push(new FormGroup({name: new FormControl(part.name), link: new FormControl(part.link)}))
+      })
+      console.log(this.supply);
+      console.log(this.supplyForm)
+      // this.cdr.detectChanges();
+    } else {
+      this.addEmptyPart()
     }
     this.machines = await getMachines()
-    console.log(this.machines)
-    this.addEmptyPart()
   }
+
   public async deleteSupply() {
     this.deleting = true
-    // await this.supply.delete().then(() => {
-    //   this.deleting = false
-    //   //this.supplies.splice(this.supplies.indexOf(supply), 1)
-    // })
+    await deleteSupply({supplyId: this.supply.id});
+    this.deleting = false
+    this.supplyForm.reset()
+    this.close.emit();
   }
   addEmptyPart() {
     this.supplyForm.controls['parts'].push(new FormGroup({name: new FormControl(''), link: new FormControl('')}))
@@ -50,10 +58,16 @@ export class SupplyEditComponent {
     this.supplyForm.controls.parts.removeAt(index);
   }
   async submit() {
-
+    this.submitting = true;
     this.supply = this.supplyForm.getRawValue()
-    console.log(this.supply)
-    await createSupply({requestBody:this.supply})
+    if (this.supply.machine_id == 'null') {
+      this.supply = null;
+    }
+    if (this.supply.id) {
+      await updateSupply({supplyId: this.supply.id, requestBody: this.supply})
+    } else {
+      await createSupply({requestBody:this.supply})
+    }
     this.supplyForm.reset()
     this.close.emit();
   }

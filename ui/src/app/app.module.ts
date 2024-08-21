@@ -15,7 +15,6 @@ import { MachineComponent } from './components/machine/machine.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CompletedTasksPipe } from './pipes/completed-tasks.pipe';
 import { DueTasksPipe } from './pipes/due-tasks.pipe';
-import { OverduePipe } from './pipes/overdue.pipe';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TaskStatusBadgeComponent } from './components/task-status-badge/task-status-badge.component';
 import '@cds/core/icon/register.js';
@@ -27,6 +26,7 @@ import { TaskSupplyStatusBadgeComponent } from './components/task-supply-status-
 import { SupplyEditComponent } from './components/supply-edit/supply-edit.component';
 import '@cds/core/input/register.js';
 import { CdsModule } from '@cds/angular';
+import { SupplyComponent } from './components/supply/supply.component';
 
 ClarityIcons.addIcons(homeIcon, fuelIcon, tasksIcon, toolsIcon, plusCircleIcon, floppyIcon, trashIcon);
 @NgModule({
@@ -41,12 +41,12 @@ ClarityIcons.addIcons(homeIcon, fuelIcon, tasksIcon, toolsIcon, plusCircleIcon, 
     MachineComponent,
     CompletedTasksPipe,
     DueTasksPipe,
-    OverduePipe,
     TaskStatusBadgeComponent,
     SuppliesComponent,
     MachineEditComponent,
     TaskSupplyStatusBadgeComponent,
-    SupplyEditComponent
+    SupplyEditComponent,
+    SupplyComponent
   ],
   imports: [
     BrowserModule,

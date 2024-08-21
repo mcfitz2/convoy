@@ -6,7 +6,7 @@
             <clr-select-container>
                 <label>Machine</label>
                 <select clrSelect name="options" formControlName="machine_id">
-                    <option *ngFor="let machine of machines" [value]="null" [selected]="true">Universal</option>
+                    <option [value]="null" [selected]="true">Universal</option>
                     <option *ngFor="let machine of machines" [value]="machine.id">{{machine.name}}</option>
                 </select>
             </clr-select-container>
@@ -52,7 +52,7 @@
 
     </div>
     <div class="side-panel-footer">
-        <button *ngIf="!create" type="button" class="btn btn-outline btn-danger"
+        <button *ngIf="!create" type="button" [clrLoading]="deleting" class="btn btn-outline btn-danger"
             (click)="deleteSupply()">Delete</button>
         <button type="button" class="btn btn-outline" (click)="close.emit()">Cancel</button>
         <button type="button" class="btn btn-primary" [disabled]="!supplyForm.valid" (click)="submit()">Submit</button>

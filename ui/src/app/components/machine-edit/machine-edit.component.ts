@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Machine, MachineCreate, MachineDetailed, createMachine, createReading, deleteMachine, updateMachine } from 'src/client';
-import { ModalService } from '../../services/modal.service';
+import { Machine, createMachine, createReading, deleteMachine, updateMachine } from 'src/client';
 import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
@@ -9,17 +8,14 @@ import { FormGroup, FormControl } from '@angular/forms';
   styleUrl: './machine-edit.component.css'
 })
 export class MachineEditComponent implements OnInit {
-  @Input() machine: MachineDetailed = {
+  @Input() machine: Machine = {
     id: '',
     make: '',
     model: '',
     year: 0,
     meter_unit: '',
-    meter_readings: [],
-    task_definitions: [],
-    tasks: [],
     current_meter_reading: 0,
-    name: 0
+    name: null
   };
   @Input() open: boolean = false;
   @Input() create: boolean = false;
@@ -34,7 +30,7 @@ export class MachineEditComponent implements OnInit {
     model: new FormControl(''),
     image: new FormControl(null),
     purchase_date: new FormControl(null),
-    meter_value: new FormControl<number>(0),
+    current_meter_reading: new FormControl<number>(0),
     file: new FormControl(null)
   })
   constructor() {
@@ -66,13 +62,15 @@ export class MachineEditComponent implements OnInit {
   async submit() {
     try {
       if (this.create) {
-        const newMachine: MachineCreate = this.machineForm.getRawValue();
+        const newMachine: Machine = this.machineForm.getRawValue();
         const createdMachine: Machine = await createMachine({ requestBody: newMachine })
-        await createReading({ machineId: createdMachine.id, requestBody: { value: this.machineForm.get('meter_value').value } })
+        await createReading({ machineId: createdMachine.id, requestBody: { value: this.machineForm.get('current_meter_reading').value } })
       } else {
-        await updateMachine({ machineId: this.machine.id, requestBody: this.machine as MachineCreate })
-        if (this.machine.current_meter_reading != this.machineForm.get('meter_value').value) {
-          await createReading({ machineId: this.machine.id, requestBody: { value: this.machineForm.get('meter_value').value } })
+        const newMachine: Machine = this.machineForm.getRawValue();
+
+        await updateMachine({ machineId: this.machine.id, requestBody: newMachine })
+        if (this.machine.current_meter_reading != this.machineForm.get('current_meter_reading').value) {
+          await createReading({ machineId: this.machine.id, requestBody: { value: this.machineForm.get('current_meter_reading').value } })
         }
       }
     } catch(err) {

@@ -25,11 +25,11 @@
 
                 </select>
             </clr-select-container>
-            <!-- <clr-date-container>
+            <clr-date-container>
                 <label>Purchase Date</label>
                 <input type="date" autocomplete="off" clrDate required formControlName="purchase_date"
                     name="purchase_date" [(clrDate)]="purchaseDate" />
-            </clr-date-container> -->
+            </clr-date-container>
             <clr-file-input-container>
                 <label>Picture</label>
                 <input type="file" formControlName="file"  clrFileInput
@@ -39,7 +39,7 @@
             </clr-file-input-container>
             <clr-input-container>
                 <label>Meter Reading</label>
-                <input clrInput type="number" formControlName="meter_value"
+                <input clrInput type="number" formControlName="current_meter_reading"
                     required name="current_meter_reading" />
                 <clr-control-helper>{{machine.meter_unit | unitPlural}}</clr-control-helper>
             </clr-input-container>

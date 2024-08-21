@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Supply, createSupply, getSupplies, updateSupply } from 'src/client';
+import { createSupply, getSupplies, updateSupply } from 'src/client';
 import { ModifiableSupply } from '../../models/modifiable-supply.model';
 
 @Component({
@@ -13,8 +13,8 @@ export class SuppliesComponent implements OnInit {
   public units: string[] = ["each", "quart", "gallon"]
   public showCreate = false;
   public createMode = false;
-  ngOnInit(): void {
-    this.fetchData();
+  async ngOnInit(): Promise<void> {
+    await this.fetchData();
   }
   public supplies: ModifiableSupply[] = [];
 
@@ -22,18 +22,12 @@ export class SuppliesComponent implements OnInit {
     this.showCreate = true;
     this.createMode = true;
   }
-  public fetchData() {
-    getSupplies().then((supplies) => {
-      this.supplies = supplies.map((s) => new ModifiableSupply(s));
-    });
+  public async fetchData() {
+    const supplies = await getSupplies();
+    this.supplies = supplies.map((s) => new ModifiableSupply(s));
   }
-  public saveSupply(supply: ModifiableSupply) {
-    this.saving = true
-    return supply.save().then(() => {
-      this.saving = false
-    })
-  }
-  public closeModal() {
+  public async closeModal() {
     this.showCreate = false;
+    await this.fetchData()
   }
 }
