@@ -53,3 +53,12 @@ ui/.vscode
 devices/.pio
 devices/.vscode
 .vscode
+backend/convoy.db
+**/.ruff_cache
+**/.pytest_cache
+
+backend/convoy.db
+backend/src/__pycache__/*
+backend/src/__pycache__/exceptions.cpython-311.pyc
+backend/src/__pycache__/main.cpython-311.pyc
+backend/convoy.db
