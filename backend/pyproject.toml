@@ -6,7 +6,9 @@ concurrency = ["gevent"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-
+filterwarnings = [
+    "ignore::UserWarning",
+    ]
 [project]
 name = "convoy"
 version = "0.0.1"
@@ -31,6 +33,6 @@ dependencies = [
 ]
 
 [tool.poe.tasks]
-test = "pytest tests/api.py tests/app.py tests/schemas.py"  
-test_all = "pytest tests/*"  
+test = "pytest tests/api.py tests/app.py tests/schemas.py tests/service.py --cov=. --cov-report xml:coverage.xml"  
+test_all = "pytest tests/* --cov=. --cov-report xml:coverage.xml"  
 test_pipeline = "pytest tests/* --cov=. --cov-report xml:coverage.xml"  

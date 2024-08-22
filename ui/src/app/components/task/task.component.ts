@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MachineSchema, TaskCompleteSchema, TaskSchema, completeTask, deleteTask } from 'src/client';
+import { MachineSchema, SupplySchema, TaskCompleteSchema, TaskSchema, completeTask, deleteTask, getMachine } from 'src/client';
 
 @Component({
   selector: 'app-task',
@@ -8,10 +8,11 @@ import { MachineSchema, TaskCompleteSchema, TaskSchema, completeTask, deleteTask
 })
 export class TaskComponent implements OnInit {
   @Input() task!: TaskSchema;
-  @Input() machine!: MachineSchema;
+  @Input() public supplies: SupplySchema[] = [];
+  @Input() public machine!: MachineSchema;
   @Output() refresh = new EventEmitter();
   public showComplete: boolean = false;
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.task.completed_meter_reading = this.machine.current_meter_reading
   }
 
@@ -20,7 +21,7 @@ export class TaskComponent implements OnInit {
   }
 
   public deleteTask() {
-    deleteTask({ machineId: this.machine.id, taskId: this.task.id }).then(() => {
+    deleteTask({ machineId: this.task.machine_id, taskId: this.task.id }).then(() => {
       this.refresh.emit();
     })
   }
@@ -33,7 +34,7 @@ export class TaskComponent implements OnInit {
       completed_date: this.task.completed_date!, completed_meter_reading: this.task.completed_meter_reading!,
       notes: '',
     }
-    completeTask({ taskId: this.task.id!, machineId: this.machine.id, requestBody: converted }).then(() => {
+    completeTask({ taskId: this.task.id!, machineId: this.task.machine_id, requestBody: converted }).then(() => {
       this.showComplete = false;
       this.refresh.emit();
     })

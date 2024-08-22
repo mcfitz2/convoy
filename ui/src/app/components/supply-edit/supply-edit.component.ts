@@ -17,7 +17,6 @@ export class SupplyEditComponent implements OnInit {
   public units: string[] = ["each", "quart", "gallon"]
   public submitting: boolean = false;
   supplyForm = new FormGroup({
-    id: new FormControl(''),
     name: new FormControl(''),
     machine_id: new FormControl(null),
     quantity_on_hand: new FormControl<number>(0),

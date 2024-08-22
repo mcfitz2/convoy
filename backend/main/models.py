@@ -1,4 +1,5 @@
 import datetime
+import enum
 from typing import List, Optional
 
 import validators
@@ -10,6 +11,8 @@ from pydantic import (
     computed_field,
     field_serializer,
     field_validator,
+    model_validator,
+    root_validator,
 )
 from sqlalchemy import CheckConstraint, ForeignKey, Numeric, String
 from sqlalchemy.orm import (
@@ -24,7 +27,20 @@ from .utils import parse_date, parse_timestamp, uuid_gen
 
 schema = "convoy"
 
+class TaskDueState(enum.Enum):
+    OVERDUE = 'OVERDUE'
+    DUE = 'DUE'
+    UPCOMING = 'UPCOMING'
+    COMPLETED = 'COMPLETED'
 
+class DueReason(enum.Enum):
+    TIME = 'TIME'
+    METER = 'METER'
+    BOTH = 'BOTH'
+    NOT_DUE = 'NOT_DUE'
+class TaskDetailedState(BaseModel):
+    state: TaskDueState
+    due_reason: DueReason = Field(default=DueReason.NOT_DUE)
 class Base(DeclarativeBase):
     pass
 
@@ -37,7 +53,7 @@ class MeterReading(Base):
     machine_id: Mapped[str] = mapped_column(ForeignKey("machine.id"))
     machine: Mapped["Machine"] = relationship(back_populates="meter_readings", lazy="joined")
 
-    __table_args__ = (CheckConstraint("value > 0", name="check_value_positive"), {})
+    __table_args__ = (CheckConstraint("value >= 0", name="check_value_positive"), {})
 
     @classmethod
     def from_schema(cls, schema: "MeterReadingSchema"):
@@ -233,7 +249,7 @@ class TaskSchema(BaseModel):
         else:
             return None
     due_days_ago: Optional[int] = Field(default=None)
-
+    detailed_state: Optional[TaskDetailedState] = Field(default=None)
 
 class TaskCompleteSchema(BaseModel):
     notes: Optional[str] = None
@@ -305,3 +321,9 @@ class MachineUpdateSchema(BaseModel):
     image: Optional[str] = None
     purchase_date: Optional[datetime.date] = None
     normalize_date = field_validator("purchase_date", mode="before")(parse_date)
+
+class TasksByStateSchema(BaseModel):
+    overdue: List[TaskSchema] = Field(default=[])
+    due: List[TaskSchema] = Field(default=[])
+    upcoming: List[TaskSchema] = Field(default=[])
+    completed: List[TaskSchema] = Field(default=[])

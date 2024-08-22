@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import { type UpdateMachineData, type UpdateMachineResponse, type DeleteMachineData, type DeleteMachineResponse, type GetMachineData, type GetMachineResponse, type GetMachinesResponse, type CreateMachineData, type CreateMachineResponse, type CreateReadingData, type CreateReadingResponse, type DeleteTaskData, type DeleteTaskResponse, type GetTaskData, type GetTaskResponse, type GetTasksData, type GetTasksResponse, type CreateTaskData, type CreateTaskResponse, type CompleteTaskData, type CompleteTaskResponse, type UpdateSupplyData, type UpdateSupplyResponse, type DeleteSupplyData, type DeleteSupplyResponse, type GetSupplyData, type GetSupplyResponse, type GetSuppliesResponse, type CreateSupplyData, type CreateSupplyResponse, CreateReadingResponseTransformer, DeleteTaskResponseTransformer, GetTaskResponseTransformer, GetTasksResponseTransformer, CreateTaskResponseTransformer, CompleteTaskResponseTransformer, UpdateSupplyResponseTransformer, DeleteSupplyResponseTransformer, GetSupplyResponseTransformer, GetSuppliesResponseTransformer, CreateSupplyResponseTransformer } from './types.gen';
+import { type UpdateMachineData, type UpdateMachineResponse, type DeleteMachineData, type DeleteMachineResponse, type GetMachineData, type GetMachineResponse, type GetMachinesResponse, type CreateMachineData, type CreateMachineResponse, type CreateReadingData, type CreateReadingResponse, type DeleteTaskData, type DeleteTaskResponse, type GetTaskData, type GetTaskResponse, type GetTasksData, type GetTasksResponse, type CreateTaskData, type CreateTaskResponse, type GetAllTasksResponse, type GetAllTasksByStateResponse, type CompleteTaskData, type CompleteTaskResponse, type UpdateSupplyData, type UpdateSupplyResponse, type DeleteSupplyData, type DeleteSupplyResponse, type GetSupplyData, type GetSupplyResponse, type GetSuppliesResponse, type CreateSupplyData, type CreateSupplyResponse, CreateReadingResponseTransformer, DeleteTaskResponseTransformer, GetTaskResponseTransformer, GetTasksResponseTransformer, CreateTaskResponseTransformer, GetAllTasksResponseTransformer, GetAllTasksByStateResponseTransformer, CompleteTaskResponseTransformer, UpdateSupplyResponseTransformer, DeleteSupplyResponseTransformer, GetSupplyResponseTransformer, GetSuppliesResponseTransformer, CreateSupplyResponseTransformer } from './types.gen';
 
 /**
  * Update Machine
@@ -192,6 +192,28 @@ export const createTask = (data: CreateTaskData): CancelablePromise<CreateTaskRe
     errors: {
         422: 'Validation Error'
     }
+}); };
+
+/**
+ * Get All Tasks
+ * @returns TaskSchema Successful Response
+ * @throws ApiError
+ */
+export const getAllTasks = (): CancelablePromise<GetAllTasksResponse> => { return __request(OpenAPI, {
+    method: 'GET',
+    url: '/api/v1/tasks',
+    responseTransformer: GetAllTasksResponseTransformer
+}); };
+
+/**
+ * Get All Tasks By State
+ * @returns TasksByStateSchema Successful Response
+ * @throws ApiError
+ */
+export const getAllTasksByState = (): CancelablePromise<GetAllTasksByStateResponse> => { return __request(OpenAPI, {
+    method: 'GET',
+    url: '/api/v1/tasks/by-state',
+    responseTransformer: GetAllTasksByStateResponseTransformer
 }); };
 
 /**

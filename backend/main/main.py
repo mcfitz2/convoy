@@ -11,10 +11,8 @@ from .utils import (
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Load the ML model
-    await convoy_service.init_models()
+    await convoy_service.init_models(drop=False)
     yield
-    # Clean up the ML models and release the resources
 
 
 app = FastAPI(generate_unique_id_function=custom_generate_unique_id, separate_input_output_schemas=False, lifespan=lifespan)

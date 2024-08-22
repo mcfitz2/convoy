@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CreateTaskData, MachineSchema, SupplySchema, TaskCreateSchema, TaskSchema, TaskSupplySchema, createTask, getMachines, getSupplies } from 'src/client';
+import { CreateTaskData, TasksByStateSchema, MachineSchema, SupplySchema, TaskCreateSchema, TaskSchema, TaskSupplySchema, createTask, getAllTasksByState, getMachines, getSupplies } from 'src/client';
 import { SelectedSupply } from '../../models/selected-supply.model';
 
 @Component({
@@ -8,7 +8,8 @@ import { SelectedSupply } from '../../models/selected-supply.model';
   styleUrl: './tasks.component.css'
 })
 export class TasksComponent {
-  public tasks: { machine: MachineSchema, task: TaskSchema}[] = [];
+  public tasksByState: TasksByStateSchema;
+  public tasks: TaskSchema[] = [];
   public machines: MachineSchema[] = [];
   public machinesById: Map<string, MachineSchema> = new Map();
   public task: TaskCreateSchema = {
@@ -24,11 +25,12 @@ export class TasksComponent {
   public supplies: SelectedSupply[] = [];
   public selectedSupply: SelectedSupply;
   public selectedSupplies: SelectedSupply[] = [];
-  private allSupplies: SupplySchema[] = [];
+  public allSupplies: SupplySchema[] = [];
   constructor() {
     this.selectedMachineId = ''
   }
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    await this.fetchData()
     this.viewDueTasks();
     this.selectedMachineId = null;
   }
@@ -51,17 +53,34 @@ export class TasksComponent {
     this.showCreate = false;
     this.viewDueTasks();
   }
+  private sortTasks(tasks: TaskSchema[]) {
+    return tasks.sort((a, b) => {
+      if (a.completed && !b.completed) return 1;
+      if (!a.completed && b.completed) return -1;
+      if (a.due_meter_ago > 0 && b.due_meter_ago <= 0) return -1;
+      if (b.due_meter_ago > 0 && a.due_meter_ago <= 0) return 1;
+      if (a.due_days_ago > 0 && b.due_days_ago <= 0) return -1;
+      if (b.due_days_ago > 0 && a.due_days_ago <= 0) return 1;
+      // if (a.task.overdue_reason && !b.task.overdue_reason) return -1;
+      // if (!a.task.overdue_reason && b.task.overdue_reason) return 1;
+      if (a.due_days_ago < b.due_days_ago) return 1;
+      if (a.due_days_ago > b.due_days_ago) return -1;
+      if (a.due_meter_ago < b.due_meter_ago) return 1;
+      if (a.due_meter_ago > b.due_meter_ago) return -1;
+      return 0;
+    });
+  }
   public closeCreate() {
     this.showCreate = false;
   }
   public viewAllTasks() {
-    this.fetchData(true, true);
+    this.tasks = this.sortTasks(this.tasksByState.completed.concat(this.tasksByState.due, this.tasksByState.upcoming))
   }
   public viewDueTasks() {
-    this.fetchData();
+    this.tasks = this.sortTasks(this.tasksByState.due)
   }
   public viewUpcomingTasks() {
-    this.fetchData(true)
+    this.tasks = this.sortTasks(this.tasksByState.upcoming)
   }
   private isDue(machine: MachineSchema, task: TaskSchema) {
     return task.completed == false && (task.due_meter_reading <= machine.current_meter_reading || new Date(task.due_date) <= new Date())
@@ -74,46 +93,18 @@ export class TasksComponent {
       return s.machine_id == this.selectedMachineId || s.machine_id == null
     }).map((s) => new SelectedSupply(s));
   }
-  public fetchData(includeNotDue: boolean = false, includeCompleted: boolean = false) {
-    getMachines().then((machines: MachineSchema[]) => {
-      this.loading = false;
-      const t: { machine: MachineSchema, task: TaskSchema}[] = [];
-      this.machines = machines;
-      machines.forEach((machine) => {
-        this.machinesById.set(machine.id, machine);
-        if (includeNotDue) {
-          
-            machine.tasks.forEach((task) => {
-              if (!task.completed || includeCompleted) {
-                t.push({ machine: machine, task: task})
-              }
-            })
-        } else {
-            machine.tasks.forEach((task) => {
-              if ((this.isDue(machine, task) && (!task.completed || includeCompleted))) {
-                t.push({ machine: machine, task: task})
-              }
-            })
-
-        }
-      })
-      this.tasks = t.sort((a, b) => {
-        if (a.task.completed && !b.task.completed) return 1;
-        if (!a.task.completed && b.task.completed) return -1;
-        if (a.task.due_meter_ago > 0 && b.task.due_meter_ago <= 0) return -1;
-        if (b.task.due_meter_ago > 0 && a.task.due_meter_ago <= 0) return 1;
-        if (a.task.due_days_ago > 0 && b.task.due_days_ago <= 0) return -1;
-        if (b.task.due_days_ago > 0 && a.task.due_days_ago <= 0) return 1;
-        // if (a.task.overdue_reason && !b.task.overdue_reason) return -1;
-        // if (!a.task.overdue_reason && b.task.overdue_reason) return 1;
-        if (a.task.due_days_ago < b.task.due_days_ago) return 1;
-        if (a.task.due_days_ago > b.task.due_days_ago) return -1;
-        if (a.task.due_meter_ago < b.task.due_meter_ago) return 1;
-        if (a.task.due_meter_ago > b.task.due_meter_ago) return -1;
-        return 0;
-      });
-    }).then(getSupplies).then((supplies) => {
-      this.allSupplies = supplies;
-    });
+  public async fetchData() {
+    this.loading = true;
+    this.tasksByState = await getAllTasksByState()
+    console.log(this.tasksByState)
+    this.machines = await getMachines()
+    this.machinesById = this.machines.reduce((machines, machine) => {
+      machines.set(machine.id, machine)
+      return machines;
+    }, new Map<string, MachineSchema>())
+    this.allSupplies = await getSupplies()
+    this.viewAllTasks()
+    console.log(this.tasks);
+    this.loading = false;
   }
 }

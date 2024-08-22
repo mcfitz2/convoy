@@ -23,6 +23,8 @@ import { ModalService } from './services/modal.service';
 import { TasksComponent } from './components/tasks/tasks.component';
 import { SupplyEditComponent } from './components/supply-edit/supply-edit.component';
 import { TaskStatusBadgeComponent } from './components/task-status-badge/task-status-badge.component';
+import { TaskSupplyStatusBadgeComponent } from './components/task-supply-status-badge/task-supply-status-badge.component';
+import { TaskComponent } from './components/task/task.component';
 
 ClarityIcons.addIcons(homeIcon, fuelIcon, tasksIcon, toolsIcon, plusCircleIcon, floppyIcon, trashIcon);
 @NgModule({
@@ -42,7 +44,9 @@ ClarityIcons.addIcons(homeIcon, fuelIcon, tasksIcon, toolsIcon, plusCircleIcon, 
     TaskStatusBadgeComponent,
     SupplyComponent,
     SuppliesComponent,
-    SupplyEditComponent
+    SupplyEditComponent,
+    TaskSupplyStatusBadgeComponent,
+    TaskComponent
   ],
   imports: [
     BrowserModule,

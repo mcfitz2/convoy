@@ -6,13 +6,14 @@ import { SupplySchema, TaskSchema, getSupplies } from 'src/client';
   templateUrl: './task-supply-status-badge.component.html',
   styleUrl: './task-supply-status-badge.component.css'
 })
-export class TaskSchemaSupplySchemaStatusBadgeComponent implements OnInit {
+export class TaskSupplyStatusBadgeComponent implements OnInit {
   @Input() task: TaskSchema
+  @Input() supplies: SupplySchema[] = [];
   public message: string = 'Not Implemented'
   public class: string = "label label-danger"
   suppliesById: Map<string, SupplySchema> = new Map();
   public async ngOnInit() {
-      this.suppliesById = (await getSupplies()).reduce((byId, supply) => {
+      this.suppliesById = this.supplies.reduce((byId, supply) => {
         byId.set(supply.id, supply);
         return byId;
       }, new Map())

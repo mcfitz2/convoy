@@ -17,27 +17,39 @@ export class TaskStatusBadgeComponent implements OnInit {
       this.message = 'Completed'
       this.class = "label label-success"
       return
-    } else if(this.task.due_days_ago > 0 && this.task.due_meter_ago > 0) {
-      this.message = `Overdue by ${this.task.due_meter_ago} ${new UnitPluralPipe().transform(this.machine.meter_unit)} and ${this.task.due_days_ago} days`
-      this.class = "label label-danger"
-      return
-    } else if(this.task.due_days_ago == 0 && this.task.due_meter_ago == 0) {
-      this.message = `Due Now`
-      this.class = "label label-danger"
-      return
-    } else if(this.task.due_days_ago < 0 && this.task.due_meter_ago < 0) {
-      this.message = `Due in ${-1*this.task.due_meter_ago} ${new UnitPluralPipe().transform(this.machine.meter_unit)} or ${-1*this.task.due_days_ago} days`
+      // } else if(this.task.due_days_ago > 0 && this.task.due_meter_ago > 0) {
+      //   this.message = `Overdue by ${this.task.due_meter_ago} ${new UnitPluralPipe().transform(this.machine.meter_unit)} and ${this.task.due_days_ago} days`
+      //   this.class = "label label-danger"
+      //   return
+      // } else if(this.task.due_days_ago == 0 && this.task.due_meter_ago == 0) {
+      //   this.message = `Due Now`
+      //   this.class = "label label-danger"
+      //   return
+      // } else if(this.task.due_days_ago < 0 && this.task.due_meter_ago < 0) {
+      //   this.message = `Due in ${-1*this.task.due_meter_ago} ${new UnitPluralPipe().transform(this.machine.meter_unit)} or ${-1*this.task.due_days_ago} days`
+      //   this.class = "label label-warning"
+      //   return
+      // } else if(this.task.due_days_ago > 0) {
+      //   this.message = `Overdue by ${this.task.due_days_ago} days`
+      //   this.class = "label label-danger"
+      //   return
+      // } else if(this.task.due_meter_ago > 0) {
+      //   this.message = `Overdue by ${this.task.due_meter_ago} ${new UnitPluralPipe().transform(this.machine.meter_unit)}`
+      //   this.class = "label label-danger"
+      //   return
+      // } else if(this.task.due_meter_ago == 0 || this.task.due_days_ago == 0) {
+      //   this.message = `Due Now`
+      //   this.class = "label label-danger"
+      //   return
+    } else if (this.task.detailed_state.state == 'UPCOMING') {
+      this.message = `Due Soon`
       this.class = "label label-warning"
       return
-    } else if(this.task.due_days_ago > 0) {
-      this.message = `Overdue by ${this.task.due_days_ago} days`
+    } else if (this.task.detailed_state.state == 'OVERDUE') {
+      this.message = `Overdue`
       this.class = "label label-danger"
       return
-    } else if(this.task.due_meter_ago > 0) {
-      this.message = `Overdue by ${this.task.due_meter_ago} ${new UnitPluralPipe().transform(this.machine.meter_unit)}`
-      this.class = "label label-danger"
-      return
-    } else if(this.task.due_meter_ago == 0 || this.task.due_days_ago == 0) {
+    } else if (this.task.detailed_state.state == 'DUE') {
       this.message = `Due Now`
       this.class = "label label-danger"
       return

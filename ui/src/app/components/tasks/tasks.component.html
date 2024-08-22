@@ -26,8 +26,8 @@
 
             </div>
             <div *ngIf="tasks.length > 0">
-                <div *ngFor="let thing of tasks">
-                    <app-task (refresh)="fetchData()" [task]="thing.task" [machine]="thing.machine"></app-task>
+                <div *ngFor="let task of tasks">
+                    <app-task (refresh)="fetchData()" [supplies]="allSupplies" [machine]="machinesById.get(task.machine_id)" [task]="task"></app-task>
                 </div>
             </div>
             <div>

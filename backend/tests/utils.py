@@ -10,7 +10,7 @@ from ..main.service import convoy_service as service
 
 
 async def init():
-    await service.init_models()
+    await service.init_models(drop=True)
 
 
 async def delete_all_doist_tasks():
@@ -28,15 +28,41 @@ async def create_machine_via_service() -> Machine:
             purchase_date=datetime.date(2024, 8, 19),
             meter_readings=[MeterReading(timestamp=datetime.datetime.now(), value=1000)],
             tasks=[
-                Task(description="Task To Delete", time_interval=100, meter_interval=100, due_date=datetime.datetime.today(), due_meter_reading=2000),
+                Task(description="Due Task by time", time_interval=100, meter_interval=100, due_date=datetime.datetime.today(), due_meter_reading=2000),
+                Task(description="Due Task by meter", time_interval=100, meter_interval=100, due_date=datetime.datetime.today()+datetime.timedelta(days=7), due_meter_reading=900),
                 Task(
-                    description="Task to Complete", time_interval=100, meter_interval=100, due_date=datetime.datetime.today(), due_meter_reading=2000
+                    description="Upcoming Task", time_interval=100, meter_interval=100, due_date=datetime.datetime.today()+datetime.timedelta(days=7), due_meter_reading=2000
+                ),
+                Task(
+                    description="Completed Task", time_interval=100, meter_interval=100, due_date=datetime.datetime.today()-datetime.timedelta(days=7), due_meter_reading=500, completed=True, completed_date=datetime.datetime.today()-datetime.timedelta(days=7), completed_meter_reading=400
                 ),
             ],
         )
     )
     return machine
 
+async def create_machine_via_service_no_readings() -> Machine:
+    machine = await service.create_machine(
+        Machine(
+            meter_unit="mile",
+            make="Test",
+            model="Machine",
+            year=2025,
+            purchase_date=datetime.date(2024, 8, 19),
+            meter_readings=[],
+            tasks=[
+                Task(description="Due Task by time", time_interval=100, meter_interval=100, due_date=datetime.datetime.today(), due_meter_reading=2000),
+                Task(description="Due Task by meter", time_interval=100, meter_interval=100, due_date=datetime.datetime.today()+datetime.timedelta(days=7), due_meter_reading=900),
+                Task(
+                    description="Upcoming Task", time_interval=100, meter_interval=100, due_date=datetime.datetime.today()+datetime.timedelta(days=7), due_meter_reading=2000
+                ),
+                Task(
+                    description="Completed Task", time_interval=100, meter_interval=100, due_date=datetime.datetime.today()-datetime.timedelta(days=7), due_meter_reading=500, completed=True, completed_date=datetime.datetime.today()-datetime.timedelta(days=7), completed_meter_reading=400
+                ),
+            ],
+        )
+    )
+    return machine
 
 async def get_machines_via_api():
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:

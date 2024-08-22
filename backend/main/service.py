@@ -3,6 +3,7 @@ import os
 from typing import List, Tuple
 
 import requests
+from requests import HTTPError
 from requests import Session as RequestsSession
 from requests.adapters import HTTPAdapter
 from sqlalchemy import select, update
@@ -12,7 +13,19 @@ from todoist_api_python.endpoints import BASE_URL
 from todoist_api_python.models import Task as TDTask
 
 from .exceptions import MachineNotFound, SupplyNotFound, TaskNotFound
-from .models import Base, Machine, MeterReading, Supply, Task
+from .models import (
+    Base,
+    DueReason,
+    Machine,
+    MachineSchema,
+    MeterReading,
+    Supply,
+    Task,
+    TaskDetailedState,
+    TaskDueState,
+    TasksByStateSchema,
+    TaskSchema,
+)
 from .utils import LogRetry, setup_logger
 
 logger = setup_logger("ConvoyService")
@@ -20,13 +33,14 @@ enable_todoist = True
 
 
 class ConvoyService:
-    async def init_models(self):
+    async def init_models(self, drop=True):
         async with self.engine.begin() as conn:
-            await conn.run_sync(Base.metadata.drop_all)
+            if drop:
+                await conn.run_sync(Base.metadata.drop_all)
             await conn.run_sync(Base.metadata.create_all)
 
     def __init__(self):
-        self.engine = create_async_engine("sqlite+aiosqlite://")
+        self.engine = create_async_engine("sqlite+aiosqlite:///convoy.db")
         self.async_session = async_sessionmaker(self.engine, expire_on_commit=False)
         self.token = os.environ.get("TODOIST_TOKEN", "")
         self.project = os.environ.get("TODOIST_PROJECT_ID", "2338186081")
@@ -41,15 +55,30 @@ class ConvoyService:
         )
         self.todoist: TodoistAPIAsync = TodoistAPIAsync(self.token, session=s)
 
-    async def create_machine(self, machine: Machine) -> Machine:
+    async def machine_to_schema(self, machine: Machine) -> MachineSchema:
+        machine = MachineSchema.model_validate(machine)
+        machine.current_meter_reading = await self.get_current_meter_reading(machine.id)
+        return machine
+
+    async def create_machine(self, machine: Machine) -> MachineSchema:
         async with self.async_session() as session:
             session.add(machine)
-            for meter_reading in machine.meter_readings:
-                session.add(meter_reading)
-            for task in machine.tasks:
-                session.add(task)
             await session.commit()
             await session.refresh(machine)
+            for meter_reading in machine.meter_readings:
+                meter_reading.machine_id = machine.id
+                session.add(meter_reading)
+           
+            for task in machine.tasks:
+                task.machine_id = machine.id
+                session.add(task)
+            
+            await session.commit()
+            await session.refresh(machine)
+            if len(machine.meter_readings) == 0:
+                session.add(MeterReading(timestamp=datetime.datetime.now(), value=0, machine_id=machine.id))
+                await session.commit()
+                await session.refresh(machine)
         return machine
 
     async def get_machine(self, machine_id) -> Machine:
@@ -92,10 +121,26 @@ class ConvoyService:
     async def get_machines(self) -> List[Machine]:
         async with self.async_session() as session:
             return (await session.execute(select(Machine))).unique().scalars().all()
+
     async def get_current_meter_reading(self, machine_id: str) -> float:
         async with self.async_session() as session:
-            reading = (await session.execute(select(MeterReading).where(MeterReading.machine_id == machine_id)).order_by(MeterReading.timestamp)).scalars().first()
-            return reading.value
+            reading = (
+                (
+                    await session.execute(
+                        select(MeterReading)
+                        .where(MeterReading.machine_id == machine_id)
+                        .order_by(MeterReading.timestamp)
+                        .limit(1)
+                    )
+                )
+                .scalars()
+                .first()
+            )
+            if reading:
+                return reading.value
+            else:
+                return 0
+
     async def record_reading(
         self, machine_id: str, reading: MeterReading
     ) -> MeterReading:
@@ -121,8 +166,10 @@ class ConvoyService:
             session.add(task)
             await session.commit()
             await session.refresh(task)
-
-            task, td_task = await self.reconcile_task(machine, task)
+            try:
+                task, td_task = await self.reconcile_task(machine, task)
+            except HTTPError:
+                pass
             return task
 
     async def complete_task(
@@ -218,6 +265,85 @@ class ConvoyService:
                 .all()
             )
         return tasks
+
+    async def get_all_tasks(self) -> List[Task]:
+        async with self.async_session() as session:
+            tasks = (await session.execute(select(Task))).unique().scalars().all()
+        return tasks
+
+    async def determine_task_state(
+        self, machine_id: str, task_id: str
+    ) -> TaskDetailedState:
+        task = await self.get_task(machine_id, task_id)
+        if task.completed:
+            return TaskDetailedState(
+                state=TaskDueState.COMPLETED, due_reason=DueReason.NOT_DUE
+            )
+        else:
+            current_meter: float = await self.get_current_meter_reading(machine_id)
+            if (
+                task.due_meter_reading < current_meter
+                and task.due_date < datetime.date.today()
+            ):
+                return TaskDetailedState(
+                    state=TaskDueState.OVERDUE, due_reason=DueReason.BOTH
+                )
+            if (
+                task.due_meter_reading < current_meter
+                and task.due_date >= datetime.date.today()
+            ):
+                return TaskDetailedState(
+                    state=TaskDueState.OVERDUE, due_reason=DueReason.METER
+                )
+            if (
+                task.due_meter_reading > current_meter
+                and task.due_date < datetime.date.today()
+            ):
+                return TaskDetailedState(
+                    state=TaskDueState.OVERDUE, due_reason=DueReason.TIME
+                )
+
+            if (
+                task.due_meter_reading == current_meter
+                and task.due_date == datetime.date.today()
+            ):
+                return TaskDetailedState(
+                    state=TaskDueState.DUE, due_reason=DueReason.BOTH
+                )
+            if (
+                task.due_meter_reading == current_meter
+                and task.due_date > datetime.date.today()
+            ):
+                return TaskDetailedState(
+                    state=TaskDueState.DUE, due_reason=DueReason.METER
+                )
+            if (
+                task.due_meter_reading > current_meter
+                and task.due_date == datetime.date.today()
+            ):
+                return TaskDetailedState(
+                    state=TaskDueState.DUE, due_reason=DueReason.TIME
+                )
+            return TaskDetailedState(
+                state=TaskDueState.UPCOMING, due_reason=DueReason.NOT_DUE
+            )
+
+    async def get_all_tasks_by_state(self) -> TasksByStateSchema:
+        ret = TasksByStateSchema()
+        tasks = await self.get_all_tasks()
+        for task in tasks:
+            taskSchema = TaskSchema.model_validate(task)
+            taskSchema.detailed_state = await self.determine_task_state(task.machine_id, task.id)
+            if taskSchema.detailed_state.state is TaskDueState.COMPLETED:
+                ret.completed.append(taskSchema)
+            elif taskSchema.detailed_state.state is TaskDueState.DUE:
+                ret.due.append(taskSchema)
+            elif taskSchema.detailed_state.state is TaskDueState.OVERDUE:
+                ret.due.append(taskSchema)
+                ret.overdue.append(taskSchema)
+            elif taskSchema.detailed_state.state is TaskDueState.UPCOMING:
+                ret.upcoming.append(taskSchema)
+        return ret
 
     async def get_supply(self, supply_id) -> Supply:
         async with self.async_session() as session:

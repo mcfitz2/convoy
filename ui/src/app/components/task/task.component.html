@@ -7,13 +7,13 @@
         </clr-button-group>
     </div>
     <div class="card-block">
-        <span class="label label-info">{{machine.year}} {{machine.make}} {{machine.model}}</span>
+        <span *ngIf="machine" class="label label-info">{{machine.year}} {{machine.make}} {{machine.model}}</span>
         <app-task-status-badge [machine]="machine" [task]="task"></app-task-status-badge>
         <app-task-supply-status-badge [task]="task"></app-task-supply-status-badge>
 
     </div>
 </div>
-<clr-side-panel [(clrSidePanelOpen)]="showComplete" [clrSidePanelStaticBackdrop]="true">
+<clr-side-panel *ngIf="machine" [(clrSidePanelOpen)]="showComplete" [clrSidePanelStaticBackdrop]="true">
     <h3 class="side-panel-title">{{task?.description}}</h3>
     <div class="side-panel-body">
         <h2>Supplies</h2>
@@ -25,10 +25,10 @@
                 </tr>
             </thead>
             <tbody>
-                <span *ngIf="task.supplies.length == 0">No supplies needed</span>
-                <tr *ngFor="let supply of task.supplies">
-                    <td>{{supply.name}}</td>
-                    <td>{{supply.quantity_required}} {{supply.unit}}</td>
+                <span *ngIf="task.task_supplies.length == 0">No supplies needed</span>
+                <tr *ngFor="let supply of task.task_supplies">
+                    <td>{{supply.supply.name}}</td>
+                    <td>{{supply.quantity_required}} {{supply.supply.unit}}</td>
                 </tr>
             </tbody>
         </table>

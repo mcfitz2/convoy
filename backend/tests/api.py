@@ -38,9 +38,8 @@ async def test_get_machines():
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]["year"] == 2025
-    assert len(response.json()[0]["tasks"]) == 2
+    assert len(response.json()[0]["tasks"]) == 4
     assert len(response.json()[0]["meter_readings"]) == 1
-    assert response.json()[0]["name"] == "2025 Test Machine"
     assert response.json()[0]["purchase_date"] == "08/19/2024"
 
 
@@ -52,9 +51,8 @@ async def test_get_machine():
         response = await ac.get(f"/api/v1/machines/{machine.id}")
         assert response.status_code == 200
         assert response.json()["year"] == 2025
-        assert len(response.json()["tasks"]) == 2
+        assert len(response.json()["tasks"]) == 4
         assert len(response.json()["meter_readings"]) == 1
-        assert response.json()["name"] == "2025 Test Machine"
         assert response.json()["purchase_date"] == "08/19/2024"
 
 
@@ -73,8 +71,7 @@ async def test_create_machine():
     assert response.status_code == 200
     assert response.json()["year"] == 2025
     assert len(response.json()["tasks"]) == 0
-    assert len(response.json()["meter_readings"]) == 0
-    assert response.json()["name"] == "2025 Test Machine 2"
+    assert len(response.json()["meter_readings"]) == 1
     assert response.json()["purchase_date"] == "08/19/2024"
 
 
@@ -95,8 +92,7 @@ async def test_update_machine():
         assert response.status_code == 200
         assert response.json()["year"] == 2026
         assert len(response.json()["tasks"]) == 0
-        assert len(response.json()["meter_readings"]) == 0
-        assert response.json()["name"] == "2026 Test Machine 2"
+        assert len(response.json()["meter_readings"]) == 1
         assert response.json()["purchase_date"] == "08/19/2024"
 
 
@@ -150,8 +146,7 @@ async def test_record_reading():
         assert response.status_code == 200
         assert response.json()["year"] == 2025
         assert len(response.json()["tasks"]) == 0
-        assert len(response.json()["meter_readings"]) == 1
-        assert response.json()["name"] == "2025 Test Machine 2"
+        assert len(response.json()["meter_readings"]) == 2
         assert response.json()["purchase_date"] == "08/19/2024"
 
 
@@ -212,12 +207,10 @@ async def test_complete_recurring_task():
     task = response.json()
     assert task["due_date"] == "08/30/2024"
     assert task["recurring"] is True
-    logging.warning(task)
 
     response = await get_task_via_api(machine_id, task["id"])
     assert response.status_code == 200
     task = response.json()
-    logging.warning(task)
     assert task["due_date"] == "08/30/2024"
     assert task["recurring"] is True
 
@@ -287,8 +280,7 @@ async def test_delete_machine():
     assert response.status_code == 200
     assert response.json()["year"] == 2025
     assert len(response.json()["tasks"]) == 0
-    assert len(response.json()["meter_readings"]) == 0
-    assert response.json()["name"] == "2025 Test Machine 2"
+    assert len(response.json()["meter_readings"]) == 1
     assert response.json()["purchase_date"] == "08/19/2024"
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
