@@ -13,10 +13,10 @@ from ..main.models import (
 
 
 def test_parse_date():
-    m1 = MachineSchema(year=2020, make="Chevy", model="Silverado", meter_unit="mile", purchase_date="08/19/24")
-    m2 = MachineSchema(year=2020, make="Chevy", model="Silverado", meter_unit="mile", purchase_date=datetime.date(year=2024, day=19, month=8))
-    m3 = MachineSchema(year=2020, make="Chevy", model="Silverado", meter_unit="mile", purchase_date=datetime.datetime(year=2024, day=19, month=8))
-    m4 = MachineSchema(year=2020, make="Chevy", model="Silverado", meter_unit="mile", purchase_date=None)
+    m1 = MachineSchema(year=2020, make="Chevy", model="Silverado", meter_unit="mile", purchase_date="08/19/24", current_meter_reading=1000)
+    m2 = MachineSchema(year=2020, make="Chevy", model="Silverado", meter_unit="mile", purchase_date=datetime.date(year=2024, day=19, month=8), current_meter_reading=1000)
+    m3 = MachineSchema(year=2020, make="Chevy", model="Silverado", meter_unit="mile", purchase_date=datetime.datetime(year=2024, day=19, month=8), current_meter_reading=1000)
+    m4 = MachineSchema(year=2020, make="Chevy", model="Silverado", meter_unit="mile", purchase_date=None, current_meter_reading=1000)
     assert isinstance(m1.purchase_date, datetime.date)
     assert isinstance(m2.purchase_date, datetime.date)
     assert isinstance(m3.purchase_date, datetime.date)

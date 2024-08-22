@@ -56,9 +56,40 @@ class ConvoyService:
         self.todoist: TodoistAPIAsync = TodoistAPIAsync(self.token, session=s)
 
     async def machine_to_schema(self, machine: Machine) -> MachineSchema:
-        machine = MachineSchema.model_validate(machine)
-        machine.current_meter_reading = await self.get_current_meter_reading(machine.id)
-        return machine
+        machine = MachineSchema(
+            id=machine.id,
+            vin=machine.vin,
+            meter_unit=machine.meter_unit,
+            make=machine.make,
+            model=machine.model,
+            year=machine.year,
+            image=machine.image,
+            purchase_date=machine.purchase_date,
+            meter_readings=machine.meter_readings,
+            tasks=machine.tasks,
+            current_meter_reading=await self.get_current_meter_reading(machine.id)
+        )
+        return MachineSchema.model_validate(machine)
+
+    async def task_to_schema(self, task: Task) -> TaskSchema:
+        task = TaskSchema(
+            id=task.id,
+            description=task.description,
+            time_interval=task.time_interval,
+            meter_interval=task.meter_interval,
+            recurring=task.recurring,
+            notes=task.notes,
+            completed=task.completed,
+            completed_date=task.completed_date,
+            completed_meter_reading=task.completed_meter_reading,
+            due_date=task.due_date,
+            due_meter_reading=task.due_meter_reading,
+            todoist_task_id=task.todoist_task_id,
+            machine_id=task.machine_id,
+            task_supplies=task.task_supplies,
+            detailed_state=await self.determine_task_state(task.machine_id, task.id)
+        )
+        return TaskSchema.model_validate(task)
 
     async def create_machine(self, machine: Machine) -> MachineSchema:
         async with self.async_session() as session:
@@ -68,15 +99,21 @@ class ConvoyService:
             for meter_reading in machine.meter_readings:
                 meter_reading.machine_id = machine.id
                 session.add(meter_reading)
-           
+
             for task in machine.tasks:
                 task.machine_id = machine.id
                 session.add(task)
-            
+
             await session.commit()
             await session.refresh(machine)
             if len(machine.meter_readings) == 0:
-                session.add(MeterReading(timestamp=datetime.datetime.now(), value=0, machine_id=machine.id))
+                session.add(
+                    MeterReading(
+                        timestamp=datetime.datetime.now(),
+                        value=0,
+                        machine_id=machine.id,
+                    )
+                )
                 await session.commit()
                 await session.refresh(machine)
         return machine
@@ -137,7 +174,7 @@ class ConvoyService:
                 .first()
             )
             if reading:
-                return reading.value
+                return float(reading.value)
             else:
                 return 0
 
@@ -275,32 +312,45 @@ class ConvoyService:
         self, machine_id: str, task_id: str
     ) -> TaskDetailedState:
         task = await self.get_task(machine_id, task_id)
+        current_meter: float = await self.get_current_meter_reading(machine_id)
+
         if task.completed:
             return TaskDetailedState(
-                state=TaskDueState.COMPLETED, due_reason=DueReason.NOT_DUE
+                state=TaskDueState.COMPLETED,
+                due_reason=DueReason.NOT_DUE,
+                due_days_ago=(task.due_date - datetime.date.today()).days,
+                due_meter_ago=task.due_meter_reading - current_meter,
             )
         else:
-            current_meter: float = await self.get_current_meter_reading(machine_id)
             if (
                 task.due_meter_reading < current_meter
                 and task.due_date < datetime.date.today()
             ):
                 return TaskDetailedState(
-                    state=TaskDueState.OVERDUE, due_reason=DueReason.BOTH
+                    state=TaskDueState.OVERDUE,
+                    due_reason=DueReason.BOTH,
+                    due_days_ago=(task.due_date - datetime.date.today()).days,
+                    due_meter_ago=task.due_meter_reading - current_meter,
                 )
             if (
                 task.due_meter_reading < current_meter
                 and task.due_date >= datetime.date.today()
             ):
                 return TaskDetailedState(
-                    state=TaskDueState.OVERDUE, due_reason=DueReason.METER
+                    state=TaskDueState.OVERDUE,
+                    due_reason=DueReason.METER,
+                    due_days_ago=(task.due_date - datetime.date.today()).days,
+                    due_meter_ago=task.due_meter_reading - current_meter,
                 )
             if (
                 task.due_meter_reading > current_meter
                 and task.due_date < datetime.date.today()
             ):
                 return TaskDetailedState(
-                    state=TaskDueState.OVERDUE, due_reason=DueReason.TIME
+                    state=TaskDueState.OVERDUE,
+                    due_reason=DueReason.TIME,
+                    due_days_ago=(task.due_date - datetime.date.today()).days,
+                    due_meter_ago=task.due_meter_reading - current_meter,
                 )
 
             if (
@@ -308,24 +358,36 @@ class ConvoyService:
                 and task.due_date == datetime.date.today()
             ):
                 return TaskDetailedState(
-                    state=TaskDueState.DUE, due_reason=DueReason.BOTH
+                    state=TaskDueState.DUE,
+                    due_reason=DueReason.BOTH,
+                    due_days_ago=(task.due_date - datetime.date.today()).days,
+                    due_meter_ago=task.due_meter_reading - current_meter,
                 )
             if (
                 task.due_meter_reading == current_meter
                 and task.due_date > datetime.date.today()
             ):
                 return TaskDetailedState(
-                    state=TaskDueState.DUE, due_reason=DueReason.METER
+                    state=TaskDueState.DUE,
+                    due_reason=DueReason.METER,
+                    due_days_ago=(task.due_date - datetime.date.today()).days,
+                    due_meter_ago=task.due_meter_reading - current_meter,
                 )
             if (
                 task.due_meter_reading > current_meter
                 and task.due_date == datetime.date.today()
             ):
                 return TaskDetailedState(
-                    state=TaskDueState.DUE, due_reason=DueReason.TIME
+                    state=TaskDueState.DUE,
+                    due_reason=DueReason.TIME,
+                    due_days_ago=(task.due_date - datetime.date.today()).days,
+                    due_meter_ago=task.due_meter_reading - current_meter,
                 )
             return TaskDetailedState(
-                state=TaskDueState.UPCOMING, due_reason=DueReason.NOT_DUE
+                state=TaskDueState.UPCOMING,
+                due_reason=DueReason.NOT_DUE,
+                due_days_ago=(task.due_date - datetime.date.today()).days,
+                due_meter_ago=task.due_meter_reading - current_meter,
             )
 
     async def get_all_tasks_by_state(self) -> TasksByStateSchema:
@@ -333,7 +395,9 @@ class ConvoyService:
         tasks = await self.get_all_tasks()
         for task in tasks:
             taskSchema = TaskSchema.model_validate(task)
-            taskSchema.detailed_state = await self.determine_task_state(task.machine_id, task.id)
+            taskSchema.detailed_state = await self.determine_task_state(
+                task.machine_id, task.id
+            )
             if taskSchema.detailed_state.state is TaskDueState.COMPLETED:
                 ret.completed.append(taskSchema)
             elif taskSchema.detailed_state.state is TaskDueState.DUE:

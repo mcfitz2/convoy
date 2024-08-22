@@ -138,8 +138,11 @@ async def create_machine_via_api():
                 "model": "Machine 2",
                 "year": 2025,
                 "purchase_date": "08/19/2024",
+                "current_meter_reading": 1000
             },
         )
+        if response.status_code != 200:
+            logging.warning(response.content)
         return response
 
 
