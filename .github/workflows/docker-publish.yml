@@ -47,6 +47,7 @@ jobs:
           uv run poe test_pipeline
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2.3.0
+        continue-on-error: true
         with:
           file: backend/coverage.xml
   build:
