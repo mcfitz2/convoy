@@ -11,6 +11,7 @@ from .utils import (
     complete_task_via_api,
     create_machine_via_api,
     create_machine_via_service,
+    create_machine_via_service_no_readings,
     create_supply_via_api,
     create_task_via_api,
     delete_machine_via_api,
@@ -24,7 +25,6 @@ from .utils import (
     get_tasks_via_api,
     init,
     update_supply_via_api,
-    create_machine_via_service_no_readings
 )
 
 client = TestClient(app)
