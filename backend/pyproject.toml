@@ -30,6 +30,7 @@ dependencies = [
     "gevent",
     "poethepoet>=0.27.0",
     "pytest-cov",
+    "pre-commit>=3.8.0",
 ]
 
 [tool.poe.tasks]
