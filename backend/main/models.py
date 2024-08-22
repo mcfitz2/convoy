@@ -8,11 +8,8 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
-    computed_field,
     field_serializer,
     field_validator,
-    model_validator,
-    root_validator,
 )
 from sqlalchemy import CheckConstraint, ForeignKey, Numeric, String
 from sqlalchemy.orm import (
