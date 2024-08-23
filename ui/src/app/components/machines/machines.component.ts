@@ -20,6 +20,7 @@ export class MachinesComponent implements OnInit {
     model: '',
     year: 0,
     image: '',
+    current_meter_reading: 0
   }
 
   ngOnInit(): void {

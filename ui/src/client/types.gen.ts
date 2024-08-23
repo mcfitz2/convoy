@@ -17,7 +17,7 @@ export type MachineSchema = {
     purchase_date?: Date | null;
     meter_readings?: Array<MeterReadingSchema> | null;
     tasks?: Array<TaskSchema> | null;
-    current_meter_reading?: number | null;
+    current_meter_reading: number;
 };
 
 export type MachineUpdateSchema = {
@@ -84,6 +84,8 @@ export type TaskCreateSchema = {
 export type TaskDetailedState = {
     state: TaskDueState;
     due_reason?: DueReason;
+    due_meter_ago: number;
+    due_days_ago: number;
 };
 
 export type TaskDueState = 'OVERDUE' | 'DUE' | 'UPCOMING' | 'COMPLETED';
@@ -103,8 +105,6 @@ export type TaskSchema = {
     todoist_task_id?: string | null;
     machine_id: string;
     task_supplies?: Array<TaskSupplySchema>;
-    due_meter_ago?: number | null;
-    due_days_ago?: number | null;
     detailed_state?: TaskDetailedState | null;
 };
 
@@ -202,6 +202,13 @@ export type CompleteTaskData = {
 };
 
 export type CompleteTaskResponse = TaskSchema;
+
+export type SyncToTodoistData = {
+    machineId: string;
+    taskId: string;
+};
+
+export type SyncToTodoistResponse = TaskSchema;
 
 export type UpdateSupplyData = {
     requestBody: SupplyUpdateSchema;
@@ -401,6 +408,21 @@ export type $OpenApiTs = {
             };
         };
     };
+    '/api/v1/machines/{machine_id}/tasks/{task_id}/sync': {
+        post: {
+            req: SyncToTodoistData;
+            res: {
+                /**
+                 * Successful Response
+                 */
+                200: TaskSchema;
+                /**
+                 * Validation Error
+                 */
+                422: HTTPValidationError;
+            };
+        };
+    };
     '/api/v1/supplies/{supply_id}': {
         patch: {
             req: UpdateSupplyData;
@@ -583,6 +605,13 @@ export const GetAllTasksByStateResponseTransformer: GetAllTasksByStateResponseTr
 export type CompleteTaskResponseTransformer = (data: any) => Promise<CompleteTaskResponse>;
 
 export const CompleteTaskResponseTransformer: CompleteTaskResponseTransformer = async (data) => {
+    TaskSchemaModelResponseTransformer(data);
+    return data;
+};
+
+export type SyncToTodoistResponseTransformer = (data: any) => Promise<SyncToTodoistResponse>;
+
+export const SyncToTodoistResponseTransformer: SyncToTodoistResponseTransformer = async (data) => {
     TaskSchemaModelResponseTransformer(data);
     return data;
 };

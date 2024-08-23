@@ -155,6 +155,19 @@ async def complete_task(
     return updated
 
 
+@router.post(
+    "/api/v1/machines/{machine_id}/tasks/{task_id}/sync", response_model=TaskSchema
+)
+async def sync_to_todoist(
+    machine_id: str,
+    task_id: str,
+    service: ConvoyService = Depends(get_service),
+) -> TaskSchema:
+    task = await service.get_task(machine_id, task_id)
+    task, td_task = await service.reconcile_task(machine_id, task)
+    return await service.task_to_schema(task)
+
+
 @router.patch("/api/v1/supplies/{supply_id}", response_model=SupplySchema)
 async def update_supply(
     supply_id: str,

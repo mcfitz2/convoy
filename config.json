@@ -1,0 +1,17 @@
+{
+    "listeners": {
+        "*:80": {
+            "pass": "applications/fastapi"
+        }
+    },
+
+    "applications": {
+        "fastapi": {
+            "type": "python3",
+            "path": "/app/backend",
+            "home": "/app/backend/.venv",
+            "module": "main",
+            "callable": "app"
+        }
+    }
+}

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MachineSchema, SupplySchema, TaskCompleteSchema, TaskSchema, completeTask, deleteTask, getMachine } from 'src/client';
+import { MachineSchema, SupplySchema, TaskCompleteSchema, TaskSchema, completeTask, deleteTask, getMachine, syncToTodoist } from 'src/client';
 
 @Component({
   selector: 'app-task',
@@ -25,7 +25,9 @@ export class TaskComponent implements OnInit {
       this.refresh.emit();
     })
   }
-
+  public async syncToTodoist() {
+    await syncToTodoist({machineId: this.task.machine_id, taskId: this.task.id})
+  }
   public cancel() {
     this.showComplete = false;
   }

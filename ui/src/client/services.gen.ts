@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import { type UpdateMachineData, type UpdateMachineResponse, type DeleteMachineData, type DeleteMachineResponse, type GetMachineData, type GetMachineResponse, type GetMachinesResponse, type CreateMachineData, type CreateMachineResponse, type CreateReadingData, type CreateReadingResponse, type DeleteTaskData, type DeleteTaskResponse, type GetTaskData, type GetTaskResponse, type GetTasksData, type GetTasksResponse, type CreateTaskData, type CreateTaskResponse, type GetAllTasksResponse, type GetAllTasksByStateResponse, type CompleteTaskData, type CompleteTaskResponse, type UpdateSupplyData, type UpdateSupplyResponse, type DeleteSupplyData, type DeleteSupplyResponse, type GetSupplyData, type GetSupplyResponse, type GetSuppliesResponse, type CreateSupplyData, type CreateSupplyResponse, CreateReadingResponseTransformer, DeleteTaskResponseTransformer, GetTaskResponseTransformer, GetTasksResponseTransformer, CreateTaskResponseTransformer, GetAllTasksResponseTransformer, GetAllTasksByStateResponseTransformer, CompleteTaskResponseTransformer, UpdateSupplyResponseTransformer, DeleteSupplyResponseTransformer, GetSupplyResponseTransformer, GetSuppliesResponseTransformer, CreateSupplyResponseTransformer } from './types.gen';
+import { type UpdateMachineData, type UpdateMachineResponse, type DeleteMachineData, type DeleteMachineResponse, type GetMachineData, type GetMachineResponse, type GetMachinesResponse, type CreateMachineData, type CreateMachineResponse, type CreateReadingData, type CreateReadingResponse, type DeleteTaskData, type DeleteTaskResponse, type GetTaskData, type GetTaskResponse, type GetTasksData, type GetTasksResponse, type CreateTaskData, type CreateTaskResponse, type GetAllTasksResponse, type GetAllTasksByStateResponse, type CompleteTaskData, type CompleteTaskResponse, type SyncToTodoistData, type SyncToTodoistResponse, type UpdateSupplyData, type UpdateSupplyResponse, type DeleteSupplyData, type DeleteSupplyResponse, type GetSupplyData, type GetSupplyResponse, type GetSuppliesResponse, type CreateSupplyData, type CreateSupplyResponse, CreateReadingResponseTransformer, DeleteTaskResponseTransformer, GetTaskResponseTransformer, GetTasksResponseTransformer, CreateTaskResponseTransformer, GetAllTasksResponseTransformer, GetAllTasksByStateResponseTransformer, CompleteTaskResponseTransformer, SyncToTodoistResponseTransformer, UpdateSupplyResponseTransformer, DeleteSupplyResponseTransformer, GetSupplyResponseTransformer, GetSuppliesResponseTransformer, CreateSupplyResponseTransformer } from './types.gen';
 
 /**
  * Update Machine
@@ -235,6 +235,27 @@ export const completeTask = (data: CompleteTaskData): CancelablePromise<Complete
     body: data.requestBody,
     mediaType: 'application/json',
     responseTransformer: CompleteTaskResponseTransformer,
+    errors: {
+        422: 'Validation Error'
+    }
+}); };
+
+/**
+ * Sync To Todoist
+ * @param data The data for the request.
+ * @param data.machineId
+ * @param data.taskId
+ * @returns TaskSchema Successful Response
+ * @throws ApiError
+ */
+export const syncToTodoist = (data: SyncToTodoistData): CancelablePromise<SyncToTodoistResponse> => { return __request(OpenAPI, {
+    method: 'POST',
+    url: '/api/v1/machines/{machine_id}/tasks/{task_id}/sync',
+    path: {
+        machine_id: data.machineId,
+        task_id: data.taskId
+    },
+    responseTransformer: SyncToTodoistResponseTransformer,
     errors: {
         422: 'Validation Error'
     }

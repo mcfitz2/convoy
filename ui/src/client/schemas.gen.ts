@@ -107,20 +107,12 @@ export const $MachineSchema = {
             default: []
         },
         current_meter_reading: {
-            anyOf: [
-                {
-                    type: 'number'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Current Meter Reading',
-            default: 0
+            type: 'number',
+            title: 'Current Meter Reading'
         }
     },
     type: 'object',
-    required: ['meter_unit', 'make', 'model', 'year'],
+    required: ['meter_unit', 'make', 'model', 'year', 'current_meter_reading'],
     title: 'MachineSchema'
 } as const;
 
@@ -529,10 +521,18 @@ export const $TaskDetailedState = {
                 }
             ],
             default: 'NOT_DUE'
+        },
+        due_meter_ago: {
+            type: 'number',
+            title: 'Due Meter Ago'
+        },
+        due_days_ago: {
+            type: 'integer',
+            title: 'Due Days Ago'
         }
     },
     type: 'object',
-    required: ['state'],
+    required: ['state', 'due_meter_ago', 'due_days_ago'],
     title: 'TaskDetailedState'
 } as const;
 
@@ -635,28 +635,6 @@ export const $TaskSchema = {
             type: 'array',
             title: 'Task Supplies',
             default: []
-        },
-        due_meter_ago: {
-            anyOf: [
-                {
-                    type: 'number'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Due Meter Ago'
-        },
-        due_days_ago: {
-            anyOf: [
-                {
-                    type: 'integer'
-                },
-                {
-                    type: 'null'
-                }
-            ],
-            title: 'Due Days Ago'
         },
         detailed_state: {
             anyOf: [

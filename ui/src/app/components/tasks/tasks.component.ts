@@ -57,16 +57,14 @@ export class TasksComponent {
     return tasks.sort((a, b) => {
       if (a.completed && !b.completed) return 1;
       if (!a.completed && b.completed) return -1;
-      if (a.due_meter_ago > 0 && b.due_meter_ago <= 0) return -1;
-      if (b.due_meter_ago > 0 && a.due_meter_ago <= 0) return 1;
-      if (a.due_days_ago > 0 && b.due_days_ago <= 0) return -1;
-      if (b.due_days_ago > 0 && a.due_days_ago <= 0) return 1;
-      // if (a.task.overdue_reason && !b.task.overdue_reason) return -1;
-      // if (!a.task.overdue_reason && b.task.overdue_reason) return 1;
-      if (a.due_days_ago < b.due_days_ago) return 1;
-      if (a.due_days_ago > b.due_days_ago) return -1;
-      if (a.due_meter_ago < b.due_meter_ago) return 1;
-      if (a.due_meter_ago > b.due_meter_ago) return -1;
+      if (a.detailed_state.due_meter_ago > 0 && b.detailed_state.due_meter_ago <= 0) return -1;
+      if (b.detailed_state.due_meter_ago > 0 && a.detailed_state.due_meter_ago <= 0) return 1;
+      if (a.detailed_state.due_days_ago > 0 && b.detailed_state.due_days_ago <= 0) return -1;
+      if (b.detailed_state.due_days_ago > 0 && a.detailed_state.due_days_ago <= 0) return 1;
+      if (a.detailed_state.due_days_ago < b.detailed_state.due_days_ago) return 1;
+      if (a.detailed_state.due_days_ago > b.detailed_state.due_days_ago) return -1;
+      if (a.detailed_state.due_meter_ago < b.detailed_state.due_meter_ago) return 1;
+      if (a.detailed_state.due_meter_ago > b.detailed_state.due_meter_ago) return -1;
       return 0;
     });
   }

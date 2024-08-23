@@ -25,6 +25,7 @@ import { SupplyEditComponent } from './components/supply-edit/supply-edit.compon
 import { TaskStatusBadgeComponent } from './components/task-status-badge/task-status-badge.component';
 import { TaskSupplyStatusBadgeComponent } from './components/task-supply-status-badge/task-supply-status-badge.component';
 import { TaskComponent } from './components/task/task.component';
+import { TaskTodoistBadgeComponent } from './components/task-todoist-badge/task-todoist-badge.component';
 
 ClarityIcons.addIcons(homeIcon, fuelIcon, tasksIcon, toolsIcon, plusCircleIcon, floppyIcon, trashIcon);
 @NgModule({
@@ -46,7 +47,8 @@ ClarityIcons.addIcons(homeIcon, fuelIcon, tasksIcon, toolsIcon, plusCircleIcon, 
     SuppliesComponent,
     SupplyEditComponent,
     TaskSupplyStatusBadgeComponent,
-    TaskComponent
+    TaskComponent,
+    TaskTodoistBadgeComponent
   ],
   imports: [
     BrowserModule,

@@ -4,13 +4,15 @@
         <clr-button-group class="btn-primary btn-sm task-button-group">
             <clr-button (click)="openComplete()">View Details</clr-button>
             <clr-button (click)="deleteTask()">Delete</clr-button>
+            <clr-button (click)="syncToTodoist()">Todoist Sync</clr-button>
+
         </clr-button-group>
     </div>
     <div class="card-block">
         <span *ngIf="machine" class="label label-info">{{machine.year}} {{machine.make}} {{machine.model}}</span>
         <app-task-status-badge [machine]="machine" [task]="task"></app-task-status-badge>
         <app-task-supply-status-badge [task]="task"></app-task-supply-status-badge>
-
+        <app-task-todoist-badge [task]="task"></app-task-todoist-badge>
     </div>
 </div>
 <clr-side-panel *ngIf="machine" [(clrSidePanelOpen)]="showComplete" [clrSidePanelStaticBackdrop]="true">
