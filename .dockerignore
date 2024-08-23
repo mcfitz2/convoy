@@ -1,3 +1,10 @@
 ui/dist
 ui/node_modules
 ui/.angular
+backend/.venv
+backend/convoy.egg-info
+backend/__pycache__
+backend/.coverage
+backend/coverage.xml
+backend/.pytest_cache
+backend/convoy.db

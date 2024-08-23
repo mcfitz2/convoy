@@ -24,7 +24,7 @@ ENV VIRTUAL_ENV=/app/.venv
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
 
-COPY backend/* ./
-CMD ["fastapi", "run", "main.py", "--port", "80"]
+COPY backend/ ./
+CMD ["fastapi", "run", "main/main.py", "--port", "80"]
 
 EXPOSE 80
